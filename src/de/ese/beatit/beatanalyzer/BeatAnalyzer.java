@@ -6,6 +6,7 @@ import de.ese.beatit.mp3.PCMData;
 
 public class BeatAnalyzer {
 
+	/** rms values per second **/
 	private final int rmsRate = 500;
 	
 	public BeatDescription analyzeData(PCMData pcm){

@@ -6,35 +6,41 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class PulseControl implements Callable<Integer>
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class PulseControl implements Runnable
 {
 	
 	private int refPulse = 0;
 	private int actPulse = 0;
+	private int bpm = 80;
+	private int testCntr = 0;
 	
+	
+	// filter stuff
 	public static final int MEAN_SIZE = 20;
 	private int meanFilterCnt = 0;
 	public static final int MODE_SIZE = 90;
 	private int modeFilterCnt = 0;
+	// mean stuff
+	ArrayDeque<Integer> meanFIFO = new ArrayDeque<Integer>();
+	int sum = 0;
+	int mean = 0;
+	// mode stuff
+	ArrayDeque<Integer> modeFIFO = new ArrayDeque<Integer>();
+	Map<Integer, Integer> modeMap = new HashMap<Integer, Integer>();
+	int modeKey = 0;
+	int modeVal = 0;
 	
-	private int bpm = 80;
 	
-	//public final int FREQ_HZ = 1;
-	
-	
-	@Override public Integer call()
+	@Override public void run()
 	{
-		// mean stuff
-		ArrayDeque<Integer> meanFIFO = new ArrayDeque<Integer>();
-		int sum = 0;
-		int mean = 0;
-		
-		
-		// mode stuff
-		ArrayDeque<Integer> modeFIFO = new ArrayDeque<Integer>();
-		Map<Integer, Integer> modeMap = new HashMap<Integer, Integer>();
-		int modeKey = 0;
-		int modeVal = 0;
 		
 		// get new act pulse
 		actPulse = 60;
@@ -110,7 +116,8 @@ public class PulseControl implements Callable<Integer>
 			// change bpm here
 		}
 		
-		return bpm;
+		//return bpm;
+		testCntr++;
 	}
 	
 	public PulseControl()
@@ -129,5 +136,6 @@ public class PulseControl implements Callable<Integer>
 	{
 		return this.bpm;
 	}
+
 	
 }

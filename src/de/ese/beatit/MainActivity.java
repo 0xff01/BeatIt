@@ -1,18 +1,33 @@
 package de.ese.beatit;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 
 public class MainActivity extends Activity {
+	
+	private PulseControl pulseCtrl = null;
+	private ScheduledExecutorService schedExec = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        // init pulseCtrl
+        pulseCtrl = new PulseControl();
+        
+        // init scheduled executor service
+        schedExec = Executors.newSingleThreadScheduledExecutor();
+        
     }
 
 
@@ -35,8 +50,34 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
     
-    /** Called when the user clicks the Send button */
-    public void sendMessage(View view) {
-        // Do something in response to button
+    /** Called when the user clicks the Start button */
+    public void startCtrl(View view) {
+    	
+    	// start exec
+        schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1, TimeUnit.SECONDS);
+        // dissable start button
+        Button btnStart = (Button) findViewById(R.id.start_button);
+        btnStart.setEnabled(false);
+        // enable stop button
+        Button btnStop = (Button) findViewById(R.id.stop_button);
+        btnStop.setEnabled(true);
+    }
+    
+    /** Called when the user clicks the Stop button */
+    public void stopCtrl(View view) {
+    	
+    	// stop exec
+        try {
+			schedExec.awaitTermination(100, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        // dissable stop button
+        Button btnStop = (Button) findViewById(R.id.stop_button);
+        btnStop.setEnabled(false);
+        // enable stop button
+        Button btnStart = (Button) findViewById(R.id.start_button);
+        btnStart.setEnabled(true);
     }
 }

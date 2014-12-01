@@ -2,15 +2,15 @@ package de.ese.beatit.beatanalyzer;
 
 public class BeatDescription {
 
-	private int bpm;
+	private double bpm;
 	private double firstBeatPosition;
 	
-	public int getBpm() {
+	public double getBpm() {
 		return bpm;
 	}
 	
-	public void setBpm(int bpm) {
-		this.bpm = bpm;
+	public void setBpm(double bpm2) {
+		this.bpm = bpm2;
 	}
 
 	public double getFirstBeatPosition() {

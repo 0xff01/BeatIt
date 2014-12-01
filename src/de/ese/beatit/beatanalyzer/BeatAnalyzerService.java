@@ -1,8 +1,12 @@
 package de.ese.beatit.beatanalyzer;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import de.ese.beatit.mp3.MP3Loader;
+import de.ese.beatit.mp3.PCMData;
 
 import android.app.Service;
 import android.content.Intent;
@@ -18,6 +22,11 @@ public class BeatAnalyzerService extends Service {
 
 	private boolean DEBUG = true;
 	private String DEBUG_FS_PREFIX = "/storage/emulated/0/ese/";
+	
+	/** beatanalyzer **/
+	private MP3Loader mp3Loader = new MP3Loader();
+	private int segmentDurationSeconds = 20;
+	private BeatAnalyzer beatAnalyzer = new BeatAnalyzer();
 	
 	/** Adapter class to communicate with app **/
 	public class BeatAnalyzerServiceBinder extends Binder {
@@ -43,7 +52,7 @@ public class BeatAnalyzerService extends Service {
 	
 	private BeatAnalyzerServiceBinder binder = new BeatAnalyzerServiceBinder(this);
 	
-	private TrackDatabase database = null;
+	private final TrackDatabase database = new TrackDatabase();
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -54,7 +63,7 @@ public class BeatAnalyzerService extends Service {
 	public void onCreate() {
 	
 		// load database
-		database = new TrackDatabase();
+		database.load();
 		
 		// start task which periodically searches for MP3 Files
 		// which are not analyzed yet
@@ -73,13 +82,58 @@ public class BeatAnalyzerService extends Service {
 		
 		// get all mp3 files from system
 		ArrayList<String> mp3Files = mp3Files();
-		for(String s : mp3Files){
+		for(String path : mp3Files){
 			
 			// in debug only analyze files from given directory
-			if(DEBUG && !s.startsWith(DEBUG_FS_PREFIX)){
+			if(DEBUG && !path.startsWith(DEBUG_FS_PREFIX)){
 				continue;
 			}
-			Log.e("beatit", s);
+			Log.e("beatit", path);
+			
+			// check whether database already knows mp3 file
+			boolean known = false;
+			
+			// TODO
+			
+			if(known){
+				continue;
+			}
+			
+			float bpm = -1;
+			float firstBeatPosition = -1;
+			
+			// read tags
+			// TODO
+			
+			if(bpm == -1 || firstBeatPosition == -1){
+				
+				// either bpm or firstbeatPosition or both are not known.
+				try {
+					
+					// get pcm
+					Log.e("beatit", "get pcm");
+					PCMData pcm = mp3Loader.loadMp3Begin(path, segmentDurationSeconds);
+					
+					// check pcm signal validity
+					if(!pcm.isValid()){
+						continue;
+					}
+					
+					// analyze
+					Log.e("beatit", "analyze");
+					BeatDescription beatDescription = beatAnalyzer.analyzeData(pcm, bpm, firstBeatPosition);
+					
+					// check certainty of analysis
+					// TODO
+					
+					// save to database
+					database.insert(new Pair<String, BeatDescription>(path, beatDescription));
+					
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+			
 		}
 	}
 	
@@ -93,6 +147,7 @@ public class BeatAnalyzerService extends Service {
 	public void onDestroy() {
 		
 		// stop analyzer task
+		timer.cancel();
 		
 		// save database
 		database.save();

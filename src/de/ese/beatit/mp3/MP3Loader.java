@@ -14,13 +14,12 @@ import javazoom.jl.decoder.SampleBuffer;
 import android.util.Log;
 
 public class MP3Loader {
-
-	// javazoom decoder
-	javazoom.jl.decoder.Decoder decoder = new javazoom.jl.decoder.Decoder();
 	
 	// loads pcm signal
-	PCMData loadMp3Begin(String path, int segmentDuration) throws FileNotFoundException {
+	public PCMData loadMp3Begin(String path, int segmentDuration) throws FileNotFoundException {
 
+		javazoom.jl.decoder.Decoder decoder = new javazoom.jl.decoder.Decoder();
+		
 		// load file
 		File file = new File(path);
 		

@@ -13,8 +13,8 @@ public class TrackDatabase {
 	 * data: indexed by bpm, per bpm there is a list containing paths to
 	 * the mp3 file as well as the beat description.
 	 */
-	private Map<Integer, ArrayList<Pair<String, BeatDescription> > > data =
-		new HashMap<Integer, ArrayList<Pair<String, BeatDescription> > >();
+	private Map<Double, ArrayList<Pair<String, BeatDescription> > > data =
+		new HashMap<Double, ArrayList<Pair<String, BeatDescription> > >();
 	
 	/**
 	 * Semaphore to synchronize access.
@@ -44,8 +44,8 @@ public class TrackDatabase {
 		acquire();
 		
 		// find closest entry
-		int nearestBpm = -1;
-		for(int b : data.keySet()){
+		double nearestBpm = -1;
+		for(double b : data.keySet()){
 			if(nearestBpm == -1 || Math.abs(b-bpm) < nearestBpm){
 				nearestBpm = Math.abs(b-bpm);
 			}
@@ -73,7 +73,7 @@ public class TrackDatabase {
 		acquire();
 		
 		if(entry.second != null){
-			int bpm = entry.second.getBpm();
+			double bpm = entry.second.getBpm();
 			
 			if(!data.containsKey(bpm)){
 				ArrayList<Pair<String, BeatDescription> > list =
@@ -101,6 +101,15 @@ public class TrackDatabase {
 	
 	/** saves database to xml **/
 	public void save(){
+		acquire();
 		
+		release();
+	}
+
+	/** load databse from xml **/
+	public void load() {
+		acquire();
+		
+		release();
 	}
 }

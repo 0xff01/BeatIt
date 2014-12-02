@@ -9,82 +9,118 @@ import android.support.v4.util.Pair;
 
 public class TrackDatabase {
 
+	private final int bpmMin = 50;
+	private final int bpmMax = 100;
+	
+	private final int numCells = 10;
+	
 	/** 
 	 * data: indexed by bpm, per bpm there is a list containing paths to
-	 * the mp3 file as well as the beat description.
+	 * the mp3 file as well as the beat description. bpms are givven in ranges.
 	 */
-	private Map<Double, ArrayList<Pair<String, BeatDescription> > > data =
-		new HashMap<Double, ArrayList<Pair<String, BeatDescription> > >();
+	private Map<Integer, ArrayList<Pair<String, BeatDescription> > > data =
+		new HashMap<Integer, ArrayList<Pair<String, BeatDescription> > >();
 	
-	/**
-	 * Semaphore to synchronize access.
-	 */
+	/** all paths which are in the databse **/
+	private ArrayList<String> paths = new ArrayList<String>();
+	
+	/** Semaphore to synchronize access. */
 	private Semaphore mutex = new Semaphore(1);
 	
-	/**
-	 * Path to the persistent database .xml file.
-	 */
+	/** Path to the persistent database .xml file. */
 	private final String dataPath = "database.xml";
 	
 	public TrackDatabase(){
-
-		// load database
 		
+		for(int i = 0; i<numCells; i++){
+			ArrayList<Pair<String, BeatDescription> > list =
+				new ArrayList<Pair<String, BeatDescription> >();
+			data.put(i, list);
+		}
 	}
 	
 	/**
 	 * Returns all tracks registered for the given bpm.
 	 * Will return tracks with closest bpm if exact bpm has not been found.
 	 */
-	Pair<String, BeatDescription> track(int bpm){
+	Pair<String, BeatDescription> track(double bpm){
 		
 		String path = "";
 		BeatDescription bDescr = null;
 		
 		acquire();
 		
-		// find closest entry
-		double nearestBpm = -1;
-		for(double b : data.keySet()){
-			if(nearestBpm == -1 || Math.abs(b-bpm) < nearestBpm){
-				nearestBpm = Math.abs(b-bpm);
+		// get tracks
+		ArrayList<Pair<String, BeatDescription> > tracks = null;
+		
+		// find cell index
+		int index = cellIndex(bpm);
+		if(data.get(index).size() == 0){
+			
+			tracks = new ArrayList<Pair<String, BeatDescription> >(); 
+			
+			for(int i = 0; i<numCells; i++){
+				
+				int i1 = index-i;
+				int i2 = index+i;
+				
+				boolean foundData = false;
+				
+				if(i1 >= 0){
+					if(data.get(i1).size() != 0){
+						tracks.addAll(data.get(i1));
+						foundData = true;
+					}
+				}
+				
+				if(i2 <numCells){
+					if(data.get(i2).size() != 0){
+						tracks.addAll(data.get(i2));
+						foundData = true;
+					}
+				}
+				
+				if(foundData){
+					break;
+				}
 			}
+			
+		} else {
+			tracks = data.get(index);
 		}
 		
-		if(nearestBpm != -1){
+		// find closest entry
+		Pair<String, BeatDescription> closestEntry = null;
+		
+		for(Pair<String, BeatDescription> entry : tracks){
 			
-			int num = data.get(nearestBpm).size();
-			int i = (int)Math.random()*(num-1);
-			if(i<0){
-				i = 0;
+			if(closestEntry == null || Math.abs(entry.second.getBpm()-bpm) < Math.abs(closestEntry.second.getBpm()-bpm)){
+				closestEntry = entry;
 			}
-			
-			path = data.get(nearestBpm).get(i).first;
-			bDescr = data.get(nearestBpm).get(i).second;
 		}
 		
 		release();
 		
-		return new Pair<String, BeatDescription>(path, bDescr);
+		return closestEntry;
 	}
 	
 	void insert(Pair<String, BeatDescription> entry){
 	
 		acquire();
-		
-		if(entry.second != null){
-			double bpm = entry.second.getBpm();
-			
-			if(!data.containsKey(bpm)){
-				ArrayList<Pair<String, BeatDescription> > list =
-					new ArrayList<Pair<String, BeatDescription> >();
-				data.put(bpm, list);
+	
+		if(!paths.contains(entry.first)){
+			if(entry.second != null){
+				int index = cellIndex(entry.second.getBpm());
+				data.get(index).add(entry);
 			}
 			
-			data.get(bpm).add(entry);
+			paths.add(entry.first);
 		}
-		
 		release();
+	}
+	
+	public boolean contains(String path){
+		return paths.contains(path);
 	}
 	
 	private void acquire(){
@@ -111,5 +147,16 @@ public class TrackDatabase {
 		acquire();
 		
 		release();
+	}
+	
+	/** returns the cell index for the given bpm **/
+	public int cellIndex(double bpm){
+		while(bpm < bpmMin){
+			bpm *= 2;
+		}
+		while(bpm > bpmMax){
+			bpm /= 2;
+		}
+		return (int)(bpm - bpmMin) * numCells / (bpmMax - bpmMin);
 	}
 }

@@ -21,7 +21,7 @@ import android.util.Log;
 public class BeatAnalyzerService extends Service {
 
 	private boolean DEBUG = true;
-	private String DEBUG_FS_PREFIX = "/storage/emulated/0/ese/";
+	private String DEBUG_FS_PREFIX = "/storage/emulated/0/ese/dance";
 	
 	/** beatanalyzer **/
 	private MP3Loader mp3Loader = new MP3Loader();
@@ -91,11 +91,7 @@ public class BeatAnalyzerService extends Service {
 			Log.e("beatit", path);
 			
 			// check whether database already knows mp3 file
-			boolean known = false;
-			
-			// TODO
-			
-			if(known){
+			if(database.contains(path)){
 				continue;
 			}
 			

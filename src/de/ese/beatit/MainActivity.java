@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
+import de.ese.beatit.mp3.MP3Player;
 
 
 
@@ -30,6 +31,10 @@ public class MainActivity extends Activity {
 	        // cast its IBinder to a concrete class and directly access it.
 	    	beatAnalayzerService = ((BeatAnalyzerService.BeatAnalyzerServiceBinder)service).getService();
 
+	        // create player
+	        mp3Player = new MP3Player(getApplicationContext());
+	        beatAnalayzerService.database().setListener(mp3Player);
+	        
 	        // Tell the user about this for our demo.
 	        Toast.makeText(getApplicationContext(), "Connected",
 	                Toast.LENGTH_SHORT).show();
@@ -46,9 +51,13 @@ public class MainActivity extends Activity {
 	    }
 	};
 	
+	/** player **/
+	private MP3Player mp3Player = null;
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        
+		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
         // connect service

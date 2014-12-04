@@ -23,12 +23,12 @@ public class BeatAnalyzerService extends Service {
 	private boolean DEBUG = true;
 	private String DEBUG_FS_PREFIX = "/storage/emulated/0/ese/dance";
 	
-	/** beatanalyzer **/
+	/** beat analyzer **/
 	private MP3Loader mp3Loader = new MP3Loader();
 	private int segmentDurationSeconds = 20;
 	private BeatAnalyzer beatAnalyzer = new BeatAnalyzer();
 	
-	/** Adapter class to communicate with app **/
+	/** Adapter class to communicate with Application **/
 	public class BeatAnalyzerServiceBinder extends Binder {
 		
 		private BeatAnalyzerService service;
@@ -47,7 +47,7 @@ public class BeatAnalyzerService extends Service {
 	}
 	
 	private Timer timer = null;
-	private int timerIntervalMinutes = 2;
+	private int timerIntervalMinutes = 20;
 	private int minDurationSeconds = 20;
 	
 	private BeatAnalyzerServiceBinder binder = new BeatAnalyzerServiceBinder(this);
@@ -148,10 +148,6 @@ public class BeatAnalyzerService extends Service {
 		// save database
 		database.save();
 	}
-	
-	Pair<String, BeatDescription> chooseTrack(int bpm){
-		return database.track(bpm);
-	}
 
 	ArrayList<String> mp3Files(){
 		
@@ -193,5 +189,9 @@ public class BeatAnalyzerService extends Service {
 		}
 		
 		return paths;
+	}
+	
+	public TrackDatabase database(){
+		return database;
 	}
 }

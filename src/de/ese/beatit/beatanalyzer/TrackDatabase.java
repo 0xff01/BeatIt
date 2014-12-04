@@ -14,6 +14,8 @@ public class TrackDatabase {
 	
 	private final int numCells = 10;
 	
+	private int count = 0;
+	
 	/** 
 	 * data: indexed by bpm, per bpm there is a list containing paths to
 	 * the mp3 file as well as the beat description. bpms are givven in ranges.
@@ -30,6 +32,9 @@ public class TrackDatabase {
 	/** Path to the persistent database .xml file. */
 	private final String dataPath = "database.xml";
 	
+	/** adapter **/
+	private TrackDatabaseListener listener = null;
+	
 	public TrackDatabase(){
 		
 		for(int i = 0; i<numCells; i++){
@@ -42,8 +47,9 @@ public class TrackDatabase {
 	/**
 	 * Returns all tracks registered for the given bpm.
 	 * Will return tracks with closest bpm if exact bpm has not been found.
+	 * @param skippedTracks 
 	 */
-	Pair<String, BeatDescription> track(double bpm){
+	public Pair<String, BeatDescription> getTrack(double bpm, ArrayList<String> skippedTracks){
 		
 		String path = "";
 		BeatDescription bDescr = null;
@@ -73,7 +79,7 @@ public class TrackDatabase {
 					}
 				}
 				
-				if(i2 <numCells){
+				if(i2 < numCells){
 					if(data.get(i2).size() != 0){
 						tracks.addAll(data.get(i2));
 						foundData = true;
@@ -108,13 +114,17 @@ public class TrackDatabase {
 	
 		acquire();
 	
-		if(!paths.contains(entry.first)){
-			if(entry.second != null){
-				int index = cellIndex(entry.second.getBpm());
-				data.get(index).add(entry);
-			}
+		if(!paths.contains(entry.first) && entry.second != null){
 			
+			int index = cellIndex(entry.second.getBpm());
+			data.get(index).add(entry);
 			paths.add(entry.first);
+			
+			count++;
+			
+			if(listener != null){
+				listener.onTrackCountChanged(count);
+			}
 		}
 		release();
 	}
@@ -147,6 +157,10 @@ public class TrackDatabase {
 		acquire();
 		
 		release();
+		
+		if(listener != null){
+			listener.onDatabaseInitialized();
+		}
 	}
 	
 	/** returns the cell index for the given bpm **/
@@ -158,5 +172,18 @@ public class TrackDatabase {
 			bpm /= 2;
 		}
 		return (int)(bpm - bpmMin) * numCells / (bpmMax - bpmMin);
+	}
+
+	public TrackDatabaseListener getListener() {
+		return listener;
+	}
+
+	public void setListener(TrackDatabaseListener listener) {
+		this.listener = listener;
+		listener.setDatabase(this);
+	}
+
+	public int getCount() {
+		return count;
 	}
 }

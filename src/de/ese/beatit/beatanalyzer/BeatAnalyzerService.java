@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import de.ese.beatit.mp3.MP3Loader;
-import de.ese.beatit.mp3.PCMData;
-
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,8 +12,10 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v4.util.Pair;
 import android.util.Log;
+import de.ese.beatit.mp3.MP3Loader;
+import de.ese.beatit.mp3.PCMData;
+import de.ese.beatit.mp3.Track;
 
 public class BeatAnalyzerService extends Service {
 
@@ -81,17 +80,17 @@ public class BeatAnalyzerService extends Service {
 	public void analyzeFileSystem(){
 		
 		// get all mp3 files from system
-		ArrayList<String> mp3Files = mp3Files();
-		for(String path : mp3Files){
+		ArrayList<Track> mp3Files = mp3Files();
+		for(Track track : mp3Files){
 			
 			// in debug only analyze files from given directory
-			if(DEBUG && !path.startsWith(DEBUG_FS_PREFIX)){
+			if(DEBUG && !track.getPath().startsWith(DEBUG_FS_PREFIX)){
 				continue;
 			}
-			Log.e("beatit", path);
+			Log.e("beatit", track.getPath());
 			
 			// check whether database already knows mp3 file
-			if(database.contains(path)){
+			if(database.contains(track.getPath())){
 				continue;
 			}
 			
@@ -108,7 +107,7 @@ public class BeatAnalyzerService extends Service {
 					
 					// get pcm
 					Log.e("beatit", "get pcm");
-					PCMData pcm = mp3Loader.loadMp3Begin(path, segmentDurationSeconds);
+					PCMData pcm = mp3Loader.loadMp3Begin(track.getPath(), segmentDurationSeconds);
 					
 					// check pcm signal validity
 					if(!pcm.isValid()){
@@ -120,10 +119,14 @@ public class BeatAnalyzerService extends Service {
 					BeatDescription beatDescription = beatAnalyzer.analyzeData(pcm, bpm, firstBeatPosition);
 					
 					// check certainty of analysis
-					// TODO
+					if(!beatDescription.isCertain()){
+						database.reportUncertainTrack(track.getPath());
+						continue;
+					}
 					
 					// save to database
-					database.insert(new Pair<String, BeatDescription>(path, beatDescription));
+					track.setBeatDescription(beatDescription);
+					database.insert(track); 
 					
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -149,9 +152,9 @@ public class BeatAnalyzerService extends Service {
 		database.save();
 	}
 
-	ArrayList<String> mp3Files(){
+	ArrayList<Track> mp3Files(){
 		
-		ArrayList<String> paths = new ArrayList<String>();
+		ArrayList<Track> paths = new ArrayList<Track>();
 		
 		String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
 		
@@ -171,10 +174,13 @@ public class BeatAnalyzerService extends Service {
 				while( !cursor.isAfterLast() ){
 					
 					String path = cursor.getString(0);
-					int songDuration = Integer.parseInt(cursor.getString(1));
+					double songDuration = (double)Integer.parseInt(cursor.getString(1)) / 1000;
 					
 					if(songDuration > minDurationSeconds && (path.endsWith(".mp3") || path.endsWith(".MP3"))){
-						paths.add(path);
+						Track track = new Track();
+						track.setPath(path);
+						track.setDuration(songDuration);
+						paths.add(track);
 					}
 					cursor.moveToNext();
 				}

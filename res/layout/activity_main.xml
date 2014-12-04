@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,11 +6,64 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:id="@+id/player_view"
     tools:context="de.ese.beatit.MainActivity" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+		
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="right"
+			android:text="BPM: " />
+		        
+		<SeekBar android:id="@+id/bpm_slider"
+			android:max="120"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+			
+    	<TextView
+    		android:id="@+id/bpm_display"
+        	android:layout_width="wrap_content"
+       		android:layout_height="wrap_content"
+    		android:gravity="right"
+        	android:text="120" />
+        
+	</LinearLayout>
+	
+	<de.ese.beatit.mp3.MP3View
+	    android:id="@+id/mp3_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android.paddingTop="60dp"
+	    android:layout_weight="1" />
 
-</RelativeLayout>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/button_bar"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+        android:gravity="center">
+
+		<ImageButton
+	        android:id="@+id/button_play_pause"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_play" />
+
+	   <ImageButton
+	        android:id="@+id/button_skip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_next" />
+
+    </LinearLayout>
+
+</LinearLayout>

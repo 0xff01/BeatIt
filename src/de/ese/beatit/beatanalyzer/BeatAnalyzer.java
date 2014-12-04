@@ -122,10 +122,11 @@ public class BeatAnalyzer {
 		BeatDescription description = new BeatDescription();
 		description.setBpm(bpm);
 		description.setFirstBeatPosition(firstBeatPosition);
+		description.setCertainty(certainty);
 		
 		Log.e("beatit", "analyzed");
 		
-		return null;
+		return description;
 	}
 	
 	

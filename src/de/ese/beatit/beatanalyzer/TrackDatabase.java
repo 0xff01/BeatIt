@@ -1,11 +1,12 @@
 package de.ese.beatit.beatanalyzer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 import android.support.v4.util.Pair;
+import android.util.Log;
+import android.util.SparseArray;
+import de.ese.beatit.mp3.Track;
 
 public class TrackDatabase {
 
@@ -16,12 +17,14 @@ public class TrackDatabase {
 	
 	private int count = 0;
 	
+	private boolean initialized = false;
+	
 	/** 
 	 * data: indexed by bpm, per bpm there is a list containing paths to
 	 * the mp3 file as well as the beat description. bpms are givven in ranges.
 	 */
-	private Map<Integer, ArrayList<Pair<String, BeatDescription> > > data =
-		new HashMap<Integer, ArrayList<Pair<String, BeatDescription> > >();
+	private SparseArray<ArrayList<Track> > data =
+		new SparseArray<ArrayList<Track> >();
 	
 	/** all paths which are in the databse **/
 	private ArrayList<String> paths = new ArrayList<String>();
@@ -38,8 +41,7 @@ public class TrackDatabase {
 	public TrackDatabase(){
 		
 		for(int i = 0; i<numCells; i++){
-			ArrayList<Pair<String, BeatDescription> > list =
-				new ArrayList<Pair<String, BeatDescription> >();
+			ArrayList<Track> list = new ArrayList<Track>();
 			data.put(i, list);
 		}
 	}
@@ -49,21 +51,18 @@ public class TrackDatabase {
 	 * Will return tracks with closest bpm if exact bpm has not been found.
 	 * @param skippedTracks 
 	 */
-	public Pair<String, BeatDescription> getTrack(double bpm, ArrayList<String> skippedTracks){
-		
-		String path = "";
-		BeatDescription bDescr = null;
+	public Track getTrack(double bpm, ArrayList<Track> skippedTracks){
 		
 		acquire();
 		
 		// get tracks
-		ArrayList<Pair<String, BeatDescription> > tracks = null;
+		ArrayList<Track> tracks = null;
 		
 		// find cell index
 		int index = cellIndex(bpm);
 		if(data.get(index).size() == 0){
 			
-			tracks = new ArrayList<Pair<String, BeatDescription> >(); 
+			tracks = new ArrayList<Track>(); 
 			
 			for(int i = 0; i<numCells; i++){
 				
@@ -96,11 +95,11 @@ public class TrackDatabase {
 		}
 		
 		// find closest entry
-		Pair<String, BeatDescription> closestEntry = null;
+		Track closestEntry = null;
 		
-		for(Pair<String, BeatDescription> entry : tracks){
+		for(Track entry : tracks){
 			
-			if(closestEntry == null || Math.abs(entry.second.getBpm()-bpm) < Math.abs(closestEntry.second.getBpm()-bpm)){
+			if(closestEntry == null || Math.abs(entry.getBeatDescription().getBpm()-bpm) < Math.abs(closestEntry.getBeatDescription().getBpm()-bpm)){
 				closestEntry = entry;
 			}
 		}
@@ -110,23 +109,31 @@ public class TrackDatabase {
 		return closestEntry;
 	}
 	
-	void insert(Pair<String, BeatDescription> entry){
+	void insert(Track entry){
 	
+		Log.e("beatit", "insert");
+		
+		boolean added = false;
+		
 		acquire();
 	
-		if(!paths.contains(entry.first) && entry.second != null){
+		if(!(paths.contains(entry.getPath())) && entry.getBeatDescription()!= null){
 			
-			int index = cellIndex(entry.second.getBpm());
+			Log.e("beatit", "do insert");
+			
+			int index = cellIndex(entry.getBeatDescription().getBpm());
 			data.get(index).add(entry);
-			paths.add(entry.first);
+			paths.add(entry.getPath());
+			
+			added = true;
 			
 			count++;
-			
-			if(listener != null){
-				listener.onTrackCountChanged(count);
-			}
 		}
 		release();
+		
+		if(added && listener != null){
+			listener.onTrackCountChanged(count);
+		}
 	}
 	
 	public boolean contains(String path){
@@ -154,7 +161,12 @@ public class TrackDatabase {
 
 	/** load databse from xml **/
 	public void load() {
+		
 		acquire();
+		
+		// TODO
+		
+		initialized = true;
 		
 		release();
 		
@@ -168,7 +180,7 @@ public class TrackDatabase {
 		while(bpm < bpmMin){
 			bpm *= 2;
 		}
-		while(bpm > bpmMax){
+		while(bpm >= bpmMax){
 			bpm /= 2;
 		}
 		return (int)(bpm - bpmMin) * numCells / (bpmMax - bpmMin);
@@ -180,10 +192,24 @@ public class TrackDatabase {
 
 	public void setListener(TrackDatabaseListener listener) {
 		this.listener = listener;
-		listener.setDatabase(this);
+		this.listener.setDatabase(this);
+		if(initialized){
+			this.listener.onDatabaseInitialized();
+		}
 	}
 
 	public int getCount() {
 		return count;
+	}
+
+	public void reportUncertainTrack(String path) {
+		
+		acquire();
+		
+		// just add to pths and not to tracks
+		paths.add(path);
+		
+		Log.e("beatit", "Added uncertain track "+path);
+		release();
 	}
 }

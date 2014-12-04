@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
 import de.ese.beatit.mp3.MP3Player;
+import de.ese.beatit.mp3.PlayerView;
 
 
 
@@ -35,6 +36,8 @@ public class MainActivity extends Activity {
 	        mp3Player = new MP3Player(getApplicationContext());
 	        beatAnalayzerService.database().setListener(mp3Player);
 	        
+	        playerView = new PlayerView(findViewById(R.id.player_view), mp3Player);
+	        
 	        // Tell the user about this for our demo.
 	        Toast.makeText(getApplicationContext(), "Connected",
 	                Toast.LENGTH_SHORT).show();
@@ -53,13 +56,15 @@ public class MainActivity extends Activity {
 	
 	/** player **/
 	private MP3Player mp3Player = null;
+	private PlayerView playerView = null;
+	
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         // connect service
         doBindService();
     }

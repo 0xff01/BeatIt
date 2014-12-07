@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 public class PulseControl implements Runnable
 {
+	// testarray
+	public int[] testPulse = new int[40];
+	public double[] testMode = new double[40];
 	
 	private int refPulse = 0;
 	private int actPulse = 0;
@@ -24,18 +27,18 @@ public class PulseControl implements Runnable
 	
 	
 	// filter stuff
-	public static final int MEAN_SIZE = 20;
+	public static final int MEAN_SIZE = 2;
 	private int meanFilterCnt = 0;
-	public static final int MODE_SIZE = 90;
+	public static final int MODE_SIZE = 20;
 	private int modeFilterCnt = 0;
 	// mean stuff
 	ArrayDeque<Integer> meanFIFO = new ArrayDeque<Integer>();
 	int sum = 0;
-	int mean = 0;
+	double mean = 0;
 	// mode stuff
-	ArrayDeque<Integer> modeFIFO = new ArrayDeque<Integer>();
-	Map<Integer, Integer> modeMap = new HashMap<Integer, Integer>();
-	int modeKey = 0;
+	ArrayDeque<Double> modeFIFO = new ArrayDeque<Double>();
+	Map<Double, Integer> modeMap = new HashMap<Double, Integer>();
+	double modeKey = 0;
 	int modeVal = 0;
 	
 	
@@ -43,21 +46,23 @@ public class PulseControl implements Runnable
 	{
 		
 		// get new act pulse
-		actPulse = 60;
+		actPulse = testPulse[testCntr];
 		
 		// use mean filter
-		meanFIFO.addFirst(mean);
-		if (meanFilterCnt > MEAN_SIZE)
+		meanFIFO.addFirst(actPulse);
+		if (meanFilterCnt >= MEAN_SIZE)
 		{
 			sum += actPulse;
 			sum -= meanFIFO.removeLast();
+			mean = sum/MEAN_SIZE;
 		}
 		else
 		{
 			sum+= actPulse;
 			meanFilterCnt++;
+			mean = sum/meanFilterCnt;
 		}
-		mean = sum/MEAN_SIZE;
+		//mean = sum/MEAN_SIZE;
 		
 		// use mode filter
 		modeFIFO.addFirst(mean);
@@ -71,7 +76,7 @@ public class PulseControl implements Runnable
 		}
 		if (modeFilterCnt > MODE_SIZE)
 		{
-			int tempKey = modeFIFO.removeLast();
+			double tempKey = modeFIFO.removeLast();
 			int tempVal = modeMap.get(tempKey);
 			if (tempVal > 1)
 			{
@@ -88,10 +93,10 @@ public class PulseControl implements Runnable
 		}
 		
 		// search map
-		Iterator<Integer> modeFilterIt = modeFIFO.iterator();
-		int tempKey = 0;
+		Iterator<Double> modeFilterIt = modeFIFO.iterator();
+		double tempKey = (float) 0.0;
 		int tempVal = 0;
-		int tempMaxKey = 0;
+		double tempMaxKey = 0.0;
 		int tempMaxVal = 0;
 		while (modeFilterIt.hasNext())
 		{
@@ -105,6 +110,8 @@ public class PulseControl implements Runnable
 		}
 		modeKey = tempMaxKey;
 		modeVal = tempMaxVal;
+		
+		testMode[testCntr] = tempMaxKey;
 		
 		// compare to refPulse
 		if (modeKey < refPulse)
@@ -125,6 +132,23 @@ public class PulseControl implements Runnable
 		this.refPulse = 60;
 		this.actPulse = 0;
 		this.bpm = 80;
+		for (int i = 0; i < 10; i++)
+		{
+			this.testPulse[i] = 80;
+		}
+		for (int i = 10; i < 20; i++)
+		{
+			this.testPulse[i] = 70 + i;
+		}
+		for (int i = 20; i < 30; i++)
+		{
+			this.testPulse[i] = 110 - i;
+		}
+		for (int i = 30; i < 40; i++)
+		{
+			this.testPulse[i] = 80;
+		}
+		this.testCntr = 0;
 	}
 	
 	public void setRefPulse( int refPulse)

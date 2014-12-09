@@ -3,6 +3,7 @@
     package="de.ese.beatit"
     android:versionCode="1"
     android:versionName="1.0" >
+<<<<<<< HEAD
     
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -10,9 +11,12 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+=======
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+>>>>>>> 41795cf6239e992ac72c4d100f0bb9ed8c720418
 
     <uses-sdk
-        android:minSdkVersion="18"
+        android:minSdkVersion="19"
         android:targetSdkVersion="21" />
 
     <application

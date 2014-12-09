@@ -67,12 +67,13 @@ public class MainActivity extends Activity {
     public void stopCtrl(View view) {
     	
     	// stop exec
-        try {
-			schedExec.awaitTermination(100, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {
+        //try {
+        	schedExec.shutdownNow();
+			//schedExec.awaitTermination(100, TimeUnit.MILLISECONDS);
+		//} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//	e.printStackTrace();
+		//}
         // dissable stop button
         Button btnStop = (Button) findViewById(R.id.stop_button);
         btnStop.setEnabled(false);

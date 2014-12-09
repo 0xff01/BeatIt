@@ -28,7 +28,7 @@ public class BluetoothService extends Service {
 	private static final UUID HEART_RATE_SERVICE = UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb");
 
 	// current pulse rate returned by the getter
-	private int mCurrentPulseRate = 0;
+	private static int mCurrentPulseRate = 0;
 	
 	// Constructor
 	public BluetoothService(BluetoothDevice mBluetoothDevice, Context context) {
@@ -107,7 +107,7 @@ public class BluetoothService extends Service {
 		return null;
 	}
 	
-	public int getCurrentPulseRate() {
+	public static int getCurrentPulseRate() {
 		return mCurrentPulseRate;
 	}
 }

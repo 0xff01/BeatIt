@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import de.ese.beatit.pulsereader.BluetoothService;
+
 import android.os.Environment;
 
 public class PulseControl implements Runnable
@@ -47,14 +49,15 @@ public class PulseControl implements Runnable
 	private FileWriter logWriter = null;
 	private String logName = null;
 	
-	private Boolean LOG_ENABLED = false;
+	private Boolean LOG_ENABLED = true;
 	
 	
 	@Override public void run()
 	{
 		
 		// get new act pulse
-		actPulse = testPulse[testCntr];
+		//actPulse = testPulse[testCntr];
+		actPulse = BluetoothService.getCurrentPulseRate();
 		
 		// use mean filter
 		meanFIFO.addFirst(actPulse);
@@ -119,7 +122,7 @@ public class PulseControl implements Runnable
 		modeKey = tempMaxKey;
 		modeVal = tempMaxVal;
 		
-		testMode[testCntr] = tempMaxKey;
+		//testMode[testCntr] = tempMaxKey;
 		
 		// compare to refPulse
 		if (modeKey < refPulse - NEG_HYSTERESIS)
@@ -135,8 +138,8 @@ public class PulseControl implements Runnable
 		if(LOG_ENABLED)
 		{
 			try {
-				//logWriter.append(this.testCntr + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + "\n");
-				logWriter.append("test1");
+				logWriter.append(this.testCntr + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + "\n");
+				//logWriter.append("test1");
 				logWriter.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -144,7 +147,7 @@ public class PulseControl implements Runnable
 			}
 		}
 		
-		testCntr++;
+		//testCntr++;
 		runCnt++;
 	}
 	

@@ -4,7 +4,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import de.ese.beatit.pulsereader.SetupBluetooth;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +49,10 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        }
+        if (id == R.id.connect_pulse_reader) {
+        	Intent connectDeviceIntent = new Intent(MainActivity.this, SetupBluetooth.class);
+        	MainActivity.this.startActivity(connectDeviceIntent);
         }
         return super.onOptionsItemSelected(item);
     }

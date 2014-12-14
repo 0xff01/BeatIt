@@ -46,21 +46,16 @@ public class BluetoothService extends Service {
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 
 			if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.d("debug", "connected");
 				gatt.discoverServices();
 			} else if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.d("debug", "connecting");
 				gatt.connect();
 			} else if (status != BluetoothGatt.GATT_SUCCESS) {
-                Log.d("debug", "disconnected");
 				gatt.disconnect();
 			}
 		}
 
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-
-            Log.d("debug", "Characteristic changed");
 			
 			// everytime a new value is measured by the pulse band the value is send
 			broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
@@ -70,13 +65,10 @@ public class BluetoothService extends Service {
 		@Override
 		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
 			// not needed because we get the values periodically by onCharacteristicsChanged
-            Log.d("debug", "Characteristic read");
 		}
 
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
-            Log.d("debug", "services discovered");
-
 			// try get heartrate from previously selected device
 			getHeartRate();
 		}
@@ -87,7 +79,6 @@ public class BluetoothService extends Service {
 
 			// check if Heart Rate Service is available on device;
 			if (heartRateService == null) {
-                Log.d("debug", "heartRateService is null");
 				return;
 			}
 
@@ -95,11 +86,8 @@ public class BluetoothService extends Service {
 			
 			// check if a value is already available;
 			if (heartRateMeasurement == null) {
-                Log.d("debug", "heartRateMeasurement is null");
 				return;
 			}
-
-            Log.d("debug", "set Notificator");
 
 			// set notificator
 			mBluetoothGatt.setCharacteristicNotification(heartRateMeasurement, true);
@@ -117,7 +105,7 @@ public class BluetoothService extends Service {
 		mCurrentPulseRate = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1);
 		
 		// write current rate to console for debugging reasons
-		Log.d("debug", "characteristic.getStringValue(0) = " + characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1));
+		Log.d("HeartRate", "Current Heart Rate: " + characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1));
 	}
 
 	@Override

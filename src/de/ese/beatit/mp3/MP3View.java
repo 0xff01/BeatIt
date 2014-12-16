@@ -1,14 +1,15 @@
 package de.ese.beatit.mp3;
 
+import java.io.File;
+import java.text.DecimalFormat;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 public class MP3View extends View implements MP3PlayerListener {
@@ -41,7 +42,7 @@ public class MP3View extends View implements MP3PlayerListener {
 	@SuppressLint("DrawAllocation")
 	protected void onDraw (Canvas canvas){
 		
-		if(currentTrack != null){
+		/*if(currentTrack != null){
 			
 			// beats
 			double phase = 2*Math.PI*(currentTime)*currentTrack.getBeatDescription().getBpm() / 60d;
@@ -54,16 +55,19 @@ public class MP3View extends View implements MP3PlayerListener {
 			}
 			
 			
-		} else {
-			canvas.drawColor(Color.LTGRAY);
-		}
+		} else { */
+			
+		//}
+		
+		canvas.drawColor(Color.rgb(0xdd, 0xdd, 0xdd));
 		
 		p.setTextSize(30);
 		
+		// border around progress
 		float processHeight = 60;
 		float graypadding = 20;
 		
-		p.setColor(Color.DKGRAY);
+		p.setColor(Color.rgb(0x33, 0xb5, 0xe5));
 		RectF timeRect = new RectF(
 			graypadding,
 			getHeight()-graypadding-processHeight,
@@ -71,13 +75,31 @@ public class MP3View extends View implements MP3PlayerListener {
 			getHeight()-graypadding);
 		
 		canvas.drawRect(timeRect, p);
+
+		RectF inner = new RectF(
+			graypadding+8,
+			getHeight()-graypadding-processHeight+8,
+			graypadding+8 + getWidth()-2*graypadding-16,
+			getHeight()-graypadding-8);
+		
+		p.setColor(Color.rgb(0xaa, 0xaa, 0xaa));
+		canvas.drawRect(inner, p);
 		
 		// track name
 		if(currentTrack != null){
 			
-			String trackDescription = /*"Track: \""+currentTrack.getPath()+"\" - "+*/String.valueOf(currentTrack.getDuration())+" s";
+			int minutes = (int)(currentTrack.getDuration() / 60);
+			int seconds = (int)(currentTrack.getDuration() - 60 * minutes);
+
+			String timeString = String.format("%02d", minutes)+":"+String.format("%02d", seconds);
 			
-			p.setColor(Color.DKGRAY);
+			String trackDescription =
+				"Track: "+currentTrack.getName()+" " +
+				"- Duration: "+timeString +" " +
+				"- BPM: "+String.valueOf((int)(currentTrack.getBeatDescription().getBpm()));
+
+			p.setColor(Color.rgb(0x33, 0xb5, 0xe5));
+
 			canvas.drawText(trackDescription, 0,  30, p);
 			
 			
@@ -89,11 +111,8 @@ public class MP3View extends View implements MP3PlayerListener {
 				graypadding+8 + process*(getWidth()-2*graypadding-16),
 				getHeight()-graypadding-8);
 			
-			p.setColor(Color.BLUE);
+			p.setColor(getResources().getColor(android.R.color.holo_orange_dark));
 			canvas.drawRect(timeRect, p);
-			
-			
-
 		}
 	}
 

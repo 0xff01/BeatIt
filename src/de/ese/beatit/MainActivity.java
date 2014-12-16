@@ -10,6 +10,8 @@ import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
 import de.ese.beatit.mp3.MP3Player;
@@ -37,6 +39,28 @@ public class MainActivity extends Activity {
 	        beatAnalayzerService.database().setListener(mp3Player);
 	        
 	        playerView = new PlayerView(findViewById(R.id.player_view), mp3Player);
+	        
+	        // init buttons
+	        ImageButton playPause = (ImageButton)(findViewById(R.id.button_play_pause));
+	        playPause.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if(mp3Player.isPlaying()){
+						mp3Player.pause();
+					} else {
+						mp3Player.play();
+					}
+				}
+			});
+	        ImageButton skip = (ImageButton)(findViewById(R.id.button_skip));
+	        skip.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if(mp3Player.isPlaying()){
+						mp3Player.skip();
+					}
+				}
+			});
 	        
 	        // Tell the user about this for our demo.
 	        Toast.makeText(getApplicationContext(), "Connected",

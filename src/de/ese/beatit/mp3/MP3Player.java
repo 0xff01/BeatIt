@@ -8,13 +8,13 @@ import java.util.TimerTask;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.v4.util.Pair;
 import android.util.Log;
-import de.ese.beatit.beatanalyzer.BeatDescription;
 import de.ese.beatit.beatanalyzer.TrackDatabaseListener;
 
 public class MP3Player extends TrackDatabaseListener {
 
+	private Timer fadeOutTimer;
+	
 	/** skipped tracks is a list of skippedTracksCountMax tracks the user skipped **/
 	private ArrayList<Track> skippedTracks = new ArrayList<Track>();
 	private int skippedTracksCountMax;
@@ -39,6 +39,7 @@ public class MP3Player extends TrackDatabaseListener {
 	
 	/** player **/
 	private MediaPlayer mPlayer;
+	private final int fadeTimeSeconds = 4;
 	
 	public MP3Player(Context c){
 		context = c;
@@ -66,101 +67,139 @@ public class MP3Player extends TrackDatabaseListener {
 		}
 	}
 	
-	/** plays a song with a close bpm **/
+	/**
+	 * sets the bpm value. changes the track if playing. 
+	 */
 	public void setBpm(double bpm){
+		
+		if(bpm == this.bpm){
+			return;
+		}
 		
 		this.bpm = bpm;
 		
-		Track track = getDatabase().getTrack(bpm, skippedTracks);
-		play(track);
-	}
-	
-	private void play(Track track){
-		if(initialized && currentTrack != track){
-			
-			if(currentTrack != null && mPlayer != null){
-				Log.e("beatit", "stop track "+currentTrack.getPath());
-				mPlayer.stop();
-			}
-			
-			
-			Log.e("beatit", "play track "+track.getPath());
-			
-			currentTrack = track;
-			
-			mPlayer = MediaPlayer.create(context, Uri.fromFile(new File(currentTrack.getPath())));
-			mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-				
-				Timer timer = null;
-						
-				@Override
-				public void onPrepared(MediaPlayer mp) {
-					
-					for(MP3PlayerListener listener : mp3PlayerListeners){
-		
-						// report track change
-						listener.onTrackChanged(currentTrack);
-					}
-					
-					// install timer to update position
-			    	timer = new Timer();
-			    	final MediaPlayer player = mPlayer;
-			    	
-			    	timer.scheduleAtFixedRate(new TimerTask() {
-
-			    		@Override
-			    		public void run() {
-			    			
-			    			if(mPlayer == player){
-			    				
-			    				if(mPlayer.isPlaying()){
-			    					int pos = mPlayer.getCurrentPosition();
-			    					
-			    					for(MP3PlayerListener listener : mp3PlayerListeners){
-			    						
-			    						// report position
-			    						listener.onPlaybackTimeChanged(((double)pos / 1000));
-			    					}
-			    				}
-			    				
-			    			} else {
-			    				timer.cancel();
-			    				
-			    				if(mPlayer == null){
-			    					
-			    					// stopped
-			    					for(MP3PlayerListener listener : mp3PlayerListeners){
-			    						
-			    						// report track change
-			    						listener.onTrackChanged(null);
-			    					}
-			    				}
-			    			}
-			    			
-			    		}
-			    		
-			    	}, 0, 10); 
-				}
-				
-			});
-			
-			mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-					
-					// play next song. TODO exclude current Track
-					Track track = getDatabase().getTrack(bpm, skippedTracks);
-					play(track);				
-				}
-			});
-			
-			mPlayer.start();
-			
-			if(bpmListener != null){
-				bpmListener.onBPMChanged(track.getBeatDescription().getBpm());
-			}
+		if(isPlaying()){
+			Track track = getDatabase().getTrack(bpm, skippedTracks);
+			play(track);
 		}
 	}
+	
+	/**
+	 * plays the given track.
+	 */
+	private void play(Track track){
+		
+		// TODO replugin check of same track when databse works!
+		if(!initialized /* || currentTrack == track */){
+			return;
+		}
+		
+		// fading
+		final boolean isFading = currentTrack != null && mPlayer != null;
+		
+		// fade out
+		if(isFading){
+			
+			Log.e("beatit", "stop track "+currentTrack.getPath());
+			
+			final MediaPlayer fadeOut = mPlayer;
+			
+			fadeOutTimer = new Timer();
+			fadeOutTimer.scheduleAtFixedRate(new TimerTask() {
+
+				// ms of timer
+				int ms = 0;
+				
+				float volume = 1.0f;
+				
+	    		@Override
+	    		public void run() {
+	    			
+	    			if((double)ms / 1000 > fadeTimeSeconds){
+	    				fadeOut.stop();
+	    				
+	    				cancel();
+	    				return;
+	    			}
+	    			
+	    			// set volume
+	    			volume = 1.0f - ((float)ms / 1000) / fadeTimeSeconds; 
+	    			fadeOut.setVolume(volume,  volume);
+	    			
+	    			// increase time
+	    			ms += 10;
+	    		}
+	    		
+	    	}, 0, 10);
+		}
+		
+		Log.e("beatit", "play track "+track.getPath());
+		
+		currentTrack = track;
+		
+		mPlayer = MediaPlayer.create(context, Uri.fromFile(new File(currentTrack.getPath())));
+		mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+			
+			Timer timer;
+			
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				
+				final MediaPlayer toPlay = mp;
+				
+				// report track change
+				for(MP3PlayerListener listener : mp3PlayerListeners){
+					listener.onTrackChanged(currentTrack);
+				}				
+				
+				// install timer to update position
+		    	timer = new Timer();
+		    	timer.scheduleAtFixedRate(new TimerTask() {
+
+		    		float volume = 0f;
+		    		
+		    		@Override
+		    		public void run() {
+		    			
+	    				if(toPlay.isPlaying()){
+	    				
+	    					int pos = toPlay.getCurrentPosition();
+	    					
+	    					if(volume != 1.0f){
+		    					// get volume
+		    					if(isFading && (float)pos / 1000 <= fadeTimeSeconds){
+		    		    			volume = ((float)pos / 1000) / fadeTimeSeconds; 
+		    					} else {
+		    						volume = 1.0f;
+		    					}
+		    					toPlay.setVolume(volume,  volume);	    						
+	    					}
+	    					
+	    					// report position
+	    					for(MP3PlayerListener listener : mp3PlayerListeners){
+	    						listener.onPlaybackTimeChanged(((double)pos / 1000));
+	    					}
+	    					
+	    					// if close to end, play next song
+	    					if(pos / 1000 >= currentTrack.getDuration() - (fadeTimeSeconds + 1)){
+	    						next();
+	    					}
+	    					
+	    				} else {
+	    					cancel();
+	    				}
+	    			}
+		    	}, 0, 10); 
+			}
+		});
+		
+		mPlayer.start();
+		
+		if(bpmListener != null){
+			bpmListener.onBPMChanged(track.getBeatDescription().getBpm());
+		}
+	}
+	
 	
 	/** skips the current track **/
 	public void skip(){
@@ -169,7 +208,11 @@ public class MP3Player extends TrackDatabaseListener {
 		skippedTracks.add(currentTrack);
 		onSkippedTrackListUpdated();
 		
-		// play next song
+		next();
+	}
+	
+	/** next song **/
+	public void next(){
 		Track track = getDatabase().getTrack(bpm, skippedTracks);
 		play(track);
 	}
@@ -184,5 +227,26 @@ public class MP3Player extends TrackDatabaseListener {
 	
 	public void addMp3PlayerListener(MP3PlayerListener listener){
 		mp3PlayerListeners.add(listener);
+	}
+	
+	public boolean isPlaying(){
+		if(mPlayer == null){
+			return false;
+		}
+		return mPlayer.isPlaying();
+	}
+
+	public void pause() {
+		if(mPlayer != null){
+			mPlayer.pause();
+		}
+	}
+	
+	public void play(){
+		if((mPlayer != null) && !mPlayer.isPlaying()){
+			mPlayer.start();
+		} else if(mPlayer == null){
+			next();
+		}
 	}
 }

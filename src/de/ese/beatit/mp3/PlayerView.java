@@ -32,7 +32,9 @@ public class PlayerView implements MP3PlayerListener{
 		bpmSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			
 			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {	}
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				setBPM(seekBar.getProgress()+30);
+			}
 			
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -40,9 +42,6 @@ public class PlayerView implements MP3PlayerListener{
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				if(fromUser){
-					setBPM(progress+30);
-				}
 			}
 		});
 		

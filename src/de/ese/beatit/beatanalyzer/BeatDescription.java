@@ -3,7 +3,6 @@ package de.ese.beatit.beatanalyzer;
 public class BeatDescription {
 
 	private double bpm;
-	private double firstBeatPosition;
 	private double certainty;
 	
 	/** certainty threshold **/
@@ -15,14 +14,6 @@ public class BeatDescription {
 	
 	public void setBpm(double bpm2) {
 		this.bpm = bpm2;
-	}
-
-	public double getFirstBeatPosition() {
-		return firstBeatPosition;
-	}
-
-	public void setFirstBeatPosition(double firstBeatPosition) {
-		this.firstBeatPosition = firstBeatPosition;
 	}
 
 	public double getCertainty() {

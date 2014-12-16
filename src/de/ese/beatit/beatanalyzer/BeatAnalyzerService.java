@@ -1,9 +1,23 @@
 package de.ese.beatit.beatanalyzer;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.KeyNotFoundException;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
 
 import android.app.Service;
 import android.content.Intent;
@@ -95,14 +109,56 @@ public class BeatAnalyzerService extends Service {
 			}
 			
 			float bpm = -1;
-			float firstBeatPosition = -1;
 			
 			// read tags
-			// TODO
+			AudioFile tagFile = null;
+			Tag tag = null;
+			try {
+				tagFile = AudioFileIO.read(new File(track.getPath()));
+				tag = tagFile.getTag();
+				if(tag.hasField(FieldKey.BPM)){
+					String bpmStr = tag.getFirst(FieldKey.BPM);
+					float tbpm = Float.parseFloat(bpmStr);
+					if(tbpm != 0){
+						bpm = tbpm;
+					} else {
+						Log.e("beatit", "Could not parse BPM from ID3 tags!");
+					}
+				} else {
+					Log.e("beatit", "BPM field does not exist.");
+				}
+			} catch (CannotReadException e1) {
+				e1.printStackTrace();
+				tagFile = null;
+				tag = null;
+				Log.e("beatit", "Could not read ID3 Tags!");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				tagFile = null;
+				tag = null;
+				Log.e("beatit", "Could not read ID3 Tags!");
+			} catch (TagException e1) {
+				e1.printStackTrace();
+				tagFile = null;
+				tag = null;
+				Log.e("beatit", "Could not read ID3 Tags!");
+			} catch (ReadOnlyFileException e1) {
+				e1.printStackTrace();				
+				tagFile = null;
+				tag = null;
+				Log.e("beatit", "Could not read ID3 Tags!");
+			} catch (InvalidAudioFrameException e1) {
+				e1.printStackTrace();
+				tagFile = null;
+				tag = null;
+				Log.e("beatit", "Could not read ID3 Tags!");
+			}
+
+			BeatDescription beatDescription = null;
 			
-			if(bpm == -1 || firstBeatPosition == -1){
+			if(bpm == -1){
 				
-				// either bpm or firstbeatPosition or both are not known.
+				// bpm not known.
 				try {
 					
 					// get pcm
@@ -116,7 +172,7 @@ public class BeatAnalyzerService extends Service {
 					
 					// analyze
 					Log.e("beatit", "analyze");
-					BeatDescription beatDescription = beatAnalyzer.analyzeData(pcm, bpm, firstBeatPosition);
+					beatDescription = beatAnalyzer.analyzeData(pcm);
 					
 					// check certainty of analysis
 					if(!beatDescription.isCertain()){
@@ -124,15 +180,38 @@ public class BeatAnalyzerService extends Service {
 						continue;
 					}
 					
-					// save to database
-					track.setBeatDescription(beatDescription);
-					database.insert(track); 
+					// save bpm as id3 tag
+					if(tag != null && tagFile != null && !tag.hasField(FieldKey.BPM)){
+						try {
+							tag.setField(FieldKey.BPM, String.valueOf(beatDescription.getBpm()));
+							AudioFileIO.write(tagFile);
+						} catch (KeyNotFoundException e) {
+							Log.e("beatit", "Could not write ID3 BPM Tag!");
+							e.printStackTrace();
+						} catch (FieldDataInvalidException e) {
+							Log.e("beatit", "Could not write ID3 BPM Tag!");
+							e.printStackTrace();
+						} catch (CannotWriteException e) {
+							Log.e("beatit", "Could not write ID3 Tags to File!");
+							e.printStackTrace();
+						}
+					}
 					
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
+				
+			} else {
+				
+				// create beat description
+				beatDescription = new BeatDescription();
+				beatDescription.setCertainty(1);
+				beatDescription.setBpm(bpm);
 			}
 			
+			// save to database
+			track.setBeatDescription(beatDescription);
+			database.insert(track);
 		}
 	}
 	

@@ -44,7 +44,7 @@ public class MP3View extends View implements MP3PlayerListener {
 		if(currentTrack != null){
 			
 			// beats
-			double phase = 2*Math.PI*(currentTime - currentTrack.getBeatDescription().getFirstBeatPosition())*currentTrack.getBeatDescription().getBpm() / 60d;
+			double phase = 2*Math.PI*(currentTime)*currentTrack.getBeatDescription().getBpm() / 60d;
 			double v = (1d+Math.cos(phase)) / 2d;
 			if(v>0.6){
 				canvas.drawColor(Color.DKGRAY);

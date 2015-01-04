@@ -174,17 +174,19 @@ public class MP3Player extends TrackDatabaseListener {
 		    					}
 		    					toPlay.setVolume(volume,  volume);	    						
 	    					}
+
+	    					// if close to end, play next song
+	    					if(pos / 1000 >= currentTrack.getDuration() - (fadeTimeSeconds + 1)){
+	    						next();
+	    						cancel();
+	    					}
 	    					
 	    					// report position
 	    					for(MP3PlayerListener listener : mp3PlayerListeners){
 	    						listener.onPlaybackTimeChanged(((double)pos / 1000));
 	    					}
-	    					
-	    					// if close to end, play next song
-	    					if(pos / 1000 >= currentTrack.getDuration() - (fadeTimeSeconds + 1)){
-	    						next();
-	    					}
-	    					
+
+	    			
 	    				} else {
 	    					cancel();
 	    				}

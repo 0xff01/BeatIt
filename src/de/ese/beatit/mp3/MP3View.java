@@ -88,21 +88,6 @@ public class MP3View extends View implements MP3PlayerListener {
 		// track name
 		if(currentTrack != null){
 			
-			int minutes = (int)(currentTrack.getDuration() / 60);
-			int seconds = (int)(currentTrack.getDuration() - 60 * minutes);
-
-			String timeString = String.format("%02d", minutes)+":"+String.format("%02d", seconds);
-			
-			String trackDescription =
-				"Track: "+currentTrack.getName()+" " +
-				"- Duration: "+timeString +" " +
-				"- BPM: "+String.valueOf((int)(currentTrack.getBeatDescription().getBpm()));
-
-			p.setColor(Color.rgb(0x33, 0xb5, 0xe5));
-
-			canvas.drawText(trackDescription, 0,  30, p);
-			
-			
 			// progress
 			float process = (float)(currentTime / currentTrack.getDuration());
 			timeRect = new RectF(

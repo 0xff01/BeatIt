@@ -99,6 +99,9 @@ public class TrackDatabase {
 		
 		for(Track entry : tracks){
 			
+			if(skippedTracks.contains(entry)){
+				continue;
+			}
 			if(closestEntry == null || Math.abs(entry.getBeatDescription().getBpm()-bpm) < Math.abs(closestEntry.getBeatDescription().getBpm()-bpm)){
 				closestEntry = entry;
 			}

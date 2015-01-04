@@ -12,7 +12,7 @@ public class PlayerView implements MP3PlayerListener{
 	private SeekBar bpmSlider;
 	
 	// bpm view
-	private TextView bpmView;
+	private TextView bpmView, trackView;
 	
 	// player
 	private MP3Player player;
@@ -26,7 +26,7 @@ public class PlayerView implements MP3PlayerListener{
 		
 		// init components
 		bpmView = (TextView)(view.findViewById(R.id.bpm_display));
-		
+		trackView = (TextView)(view.findViewById(R.id.track_view));
 		bpmSlider = (SeekBar)(view.findViewById(R.id.bpm_slider));
 		setBPM(60);
 		bpmSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -61,6 +61,21 @@ public class PlayerView implements MP3PlayerListener{
 	@Override
 	public void onTrackChanged(Track track) {
 		
+		if(track == null){
+			trackView.setText("Not playing");
+		}
+			
+		int minutes = (int)(track.getDuration() / 60);
+		int seconds = (int)(track.getDuration() - 60 * minutes);
+
+		String timeString = String.format("%02d", minutes)+":"+String.format("%02d", seconds);
+		
+		String trackDescription =
+			"Track: "+track.getName()+" " +
+			"- Duration: "+timeString +" " +
+			"- BPM: "+String.valueOf((int)(track.getBeatDescription().getBpm()));
+		
+		trackView.setText(trackDescription);
 	}
 
 	@Override

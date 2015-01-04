@@ -37,12 +37,24 @@
         
 	</LinearLayout>
 	
+	<TextView
+		android:id="@+id/track_view"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:ellipsize="marquee"
+      	android:focusable="true"
+      	android:focusableInTouchMode="true"
+		android:scrollHorizontally="true"
+      	android:singleLine="true"
+		android:marqueeRepeatLimit="marquee_forever"
+		android:text="Not playing" />
+			
 	<de.ese.beatit.mp3.MP3View
 	    android:id="@+id/mp3_view"
 	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android.paddingTop="60dp"
-	    android:layout_weight="1" />
+	    android:layout_height="100px"
+	    android.paddingTop="60dp" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

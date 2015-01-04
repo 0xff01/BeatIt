@@ -41,14 +41,16 @@ public class MainActivity extends Activity {
 	        playerView = new PlayerView(findViewById(R.id.player_view), mp3Player);
 	        
 	        // init buttons
-	        ImageButton playPause = (ImageButton)(findViewById(R.id.button_play_pause));
+	        final ImageButton playPause = (ImageButton)(findViewById(R.id.button_play_pause));
 	        playPause.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if(mp3Player.isPlaying()){
 						mp3Player.pause();
+						playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
 					} else {
 						mp3Player.play();
+						playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
 					}
 				}
 			});

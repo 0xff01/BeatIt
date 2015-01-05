@@ -15,6 +15,8 @@ public class MP3Player extends TrackDatabaseListener {
 
 	private Timer fadeOutTimer;
 	
+	private boolean paused = false;
+	
 	/** skipped tracks is a list of skippedTracksCountMax tracks the user skipped **/
 	private ArrayList<Track> skippedTracks = new ArrayList<Track>();
 	private int skippedTracksCountMax;
@@ -89,8 +91,13 @@ public class MP3Player extends TrackDatabaseListener {
 	 */
 	private void play(Track track){
 		
-		// TODO replugin check of same track when databse works!
-		if(!initialized /* || currentTrack == track */){
+		if(track == null){
+			return;
+		}
+		
+		paused = false;
+		
+		if(!initialized || currentTrack == track){
 			return;
 		}
 		
@@ -161,6 +168,10 @@ public class MP3Player extends TrackDatabaseListener {
 		    		@Override
 		    		public void run() {
 		    			
+		    			if(paused){
+		    				return;
+		    			}
+		    			
 	    				if(toPlay.isPlaying()){
 	    				
 	    					int pos = toPlay.getCurrentPosition();
@@ -182,10 +193,11 @@ public class MP3Player extends TrackDatabaseListener {
 	    					}
 	    					
 	    					// report position
-	    					for(MP3PlayerListener listener : mp3PlayerListeners){
-	    						listener.onPlaybackTimeChanged(((double)pos / 1000));
+	    					if(toPlay == mPlayer){
+		    					for(MP3PlayerListener listener : mp3PlayerListeners){
+		    						listener.onPlaybackTimeChanged(((double)pos / 1000));
+		    					}
 	    					}
-
 	    			
 	    				} else {
 	    					cancel();
@@ -240,6 +252,7 @@ public class MP3Player extends TrackDatabaseListener {
 
 	public void pause() {
 		if(mPlayer != null){
+			paused = true;
 			mPlayer.pause();
 		}
 	}
@@ -247,6 +260,7 @@ public class MP3Player extends TrackDatabaseListener {
 	public void play(){
 		if((mPlayer != null) && !mPlayer.isPlaying()){
 			mPlayer.start();
+			paused = false;
 		} else if(mPlayer == null){
 			next();
 		}

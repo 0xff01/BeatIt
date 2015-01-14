@@ -8,12 +8,14 @@ import java.util.Map;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.TimerTask;
 
 import de.ese.beatit.pulsereader.BluetoothService;
 
 import android.os.Environment;
 
-public class PulseControl implements Runnable
+//public class PulseControl implements Runnable
+public class PulseControl extends TimerTask
 {
 	// testarray
 	public int[] testPulse = new int[40];
@@ -22,15 +24,19 @@ public class PulseControl implements Runnable
 	private int refPulse = 0;
 	private int actPulse = 0;
 	private int bpm = 80;
+    private int lastChangeTime = 0;
 	private int testCntr = 0;
+    private static long timeDiff = 0;
 	
 	// runtime counter
 	int runCnt = 0;
 	
 	// filter stuff
-	public static final int MEAN_SIZE = 2;
+    private static int FILTER_TYPE = 0;
+
+	public static final int MEAN_SIZE = 20;
 	private int meanFilterCnt = 0;
-	public static final int MODE_SIZE = 5;
+	public static final int MODE_SIZE = 70;
 	private int modeFilterCnt = 0;
 	// mean stuff
 	ArrayDeque<Integer> meanFIFO = new ArrayDeque<Integer>();
@@ -41,9 +47,20 @@ public class PulseControl implements Runnable
 	Map<Integer, Integer> modeMap = new HashMap<Integer, Integer>();
 	double modeKey = 0;
 	int modeVal = 0;
+
+    // filter state stuff
+    private final int MAX_STATE = 4;
+    private final int INIT_STATE = MAX_STATE;
+    private static int state = 0;
+    private static int BPM_Tick = 0;
+    private final int BPM_UPDATE_WAIT = 20;
 	
 	private final int NEG_HYSTERESIS = 3;
 	private final int POS_HYSTERESIS = 3;
+
+    private final int BPM_REFRESH_WAIT = 40;
+
+    private final int BPM_CHANGE = 10;
 	
 	private File logFile = null;
 	private FileWriter logWriter = null;
@@ -54,91 +71,124 @@ public class PulseControl implements Runnable
 	
 	@Override public void run()
 	{
-		
+		//Date now = new Date();
+        Long now1 = (long) (System.currentTimeMillis());
 		// get new act pulse
 		//actPulse = testPulse[testCntr];
 		actPulse = BluetoothService.getCurrentPulseRate();
-		
-		// use mean filter
-		meanFIFO.addFirst(actPulse);
-		if (meanFilterCnt >= MEAN_SIZE)
-		{
-			sum += actPulse;
-			sum -= meanFIFO.removeLast();
-			mean = sum/MEAN_SIZE;
-		}
-		else
-		{
-			sum+= actPulse;
-			meanFilterCnt++;
-			mean = sum/meanFilterCnt;
-		}
-		//mean = sum/MEAN_SIZE;
-		
-		// use mode filter
-		modeFIFO.addFirst(mean);
-		if (modeMap.containsKey(mean))
-		{
-			modeMap.put(mean, modeMap.get(mean) + 1);
-		}
-		else
-		{
-			modeMap.put(mean, 1);
-		}
-		if (modeFilterCnt > MODE_SIZE)
-		{
-			int tempKey = modeFIFO.removeLast();
-			int tempVal = modeMap.get(tempKey);
-			if (tempVal > 1)
-			{
-				modeMap.put(tempKey, tempVal -1);
-			}
-			else
-			{
-				modeMap.remove(tempKey);
-			}
-		}
-		else
-		{
-			modeFilterCnt++;
-		}
-		
-		// search map
-		Iterator<Integer> modeFilterIt = modeFIFO.iterator();
-		int tempKey = 0;
-		int tempVal = 0;
-		int tempMaxKey = 0;
-		int tempMaxVal = 0;
-		while (modeFilterIt.hasNext())
-		{
-			tempKey = modeFilterIt.next();
-			tempVal = modeMap.get(tempKey);
-			if (tempVal > tempMaxVal)
-			{
-				tempMaxKey = tempKey;
-				tempMaxVal = tempVal;
-			}
-		}
-		modeKey = tempMaxKey;
-		modeVal = tempMaxVal;
-		
-		//testMode[testCntr] = tempMaxKey;
-		
-		// compare to refPulse
-		if (modeKey < refPulse - NEG_HYSTERESIS)
-		{
-			// change bpm here
-		}
-		else if (modeKey > refPulse + POS_HYSTERESIS)
-		{
-			// change bpm here
-		}
-		
+
+        // check for filter type
+        if(FILTER_TYPE == 1)
+        {
+            // use mean filter
+            meanFIFO.addFirst(actPulse);
+            if (meanFilterCnt >= MEAN_SIZE) {
+                sum += actPulse;
+                sum -= meanFIFO.removeLast();
+                mean = sum / MEAN_SIZE;
+            } else {
+                sum += actPulse;
+                meanFilterCnt++;
+                mean = sum / meanFilterCnt;
+            }
+            //mean = sum/MEAN_SIZE;
+
+            // use mode filter
+            modeFIFO.addFirst(mean);
+            if (modeMap.containsKey(mean)) {
+                modeMap.put(mean, modeMap.get(mean) + 1);
+            } else {
+                modeMap.put(mean, 1);
+            }
+            if (modeFilterCnt > MODE_SIZE) {
+                int tempKey = modeFIFO.removeLast();
+                int tempVal = modeMap.get(tempKey);
+                if (tempVal > 1) {
+                    modeMap.put(tempKey, tempVal - 1);
+                } else {
+                    modeMap.remove(tempKey);
+                }
+            } else {
+                modeFilterCnt++;
+            }
+
+            // search map
+            Iterator<Integer> modeFilterIt = modeFIFO.iterator();
+            int tempKey = 0;
+            int tempVal = 0;
+            int tempMaxKey = 0;
+            int tempMaxVal = 0;
+            while (modeFilterIt.hasNext()) {
+                tempKey = modeFilterIt.next();
+                tempVal = modeMap.get(tempKey);
+                if (tempVal > tempMaxVal) {
+                    tempMaxKey = tempKey;
+                    tempMaxVal = tempVal;
+                }
+            }
+            modeKey = tempMaxKey;
+            modeVal = tempMaxVal;
+
+            //testMode[testCntr] = tempMaxKey;
+
+            // compare to refPulse
+            if ((modeKey < refPulse - NEG_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
+                this.bpm -= this.BPM_CHANGE;
+                this.lastChangeTime = runCnt;
+            } else if ((modeKey > refPulse + POS_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
+                this.bpm += this.BPM_CHANGE;
+                this.lastChangeTime = runCnt;
+            }
+        }
+        else if (FILTER_TYPE == 2) {
+            // use mean filter
+            meanFIFO.addFirst(actPulse);
+            if (meanFilterCnt >= MEAN_SIZE) {
+                sum += actPulse;
+                sum -= meanFIFO.removeLast();
+                mean = sum / MEAN_SIZE;
+            } else {
+                sum += actPulse;
+                meanFilterCnt++;
+                mean = sum / meanFilterCnt;
+            }
+
+            if(runCnt >= BPM_Tick + state*BPM_UPDATE_WAIT)
+            {
+                if (mean < refPulse - NEG_HYSTERESIS)
+                {
+                    bpm += BPM_CHANGE;
+                    if (state > 1)
+                    {
+                        state--;
+                    }
+                    BPM_Tick = runCnt;
+                }
+                else if(mean > refPulse + POS_HYSTERESIS)
+                {
+                    bpm -= BPM_CHANGE;
+                    if (state > 1)
+                    {
+                        state--;
+                    }
+                    BPM_Tick = runCnt;
+                }
+                else
+                {
+                    if (state < MAX_STATE) {
+                        state = state + 1;
+                    }
+                    BPM_Tick = runCnt;
+                }
+            }
+        }
+
+
 		//return bpm;
 		if(LOG_ENABLED)
 		{
 			try {
-				logWriter.append(this.testCntr + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + "\n");
+				logWriter.append(this.runCnt + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + ", " + this.bpm + ", " + this.timeDiff + "\n");
 				//logWriter.append("test1");
 				logWriter.flush();
 			} catch (IOException e) {
@@ -149,13 +199,17 @@ public class PulseControl implements Runnable
 		
 		//testCntr++;
 		runCnt++;
+        Long now2 = (long) (System.currentTimeMillis());
+        this.timeDiff = now2 - now1;
 	}
 	
 	public PulseControl()
 	{
-		this.refPulse = 60;
+		this.refPulse = 160;
 		this.actPulse = 0;
 		this.bpm = 80;
+        this.state = this.INIT_STATE;
+        this.FILTER_TYPE = 2;
 		for (int i = 0; i < 10; i++)
 		{
 			this.testPulse[i] = 80;

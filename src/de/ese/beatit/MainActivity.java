@@ -3,6 +3,8 @@ package de.ese.beatit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.ese.beatit.pulsereader.SetupBluetooth;
 
@@ -18,7 +20,8 @@ import android.widget.Button;
 public class MainActivity extends Activity {
 	
 	private PulseControl pulseCtrl = null;
-	private ScheduledExecutorService schedExec = null;
+	//private ScheduledExecutorService schedExec = null;
+    private Timer pulseCtrlTimer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,8 @@ public class MainActivity extends Activity {
         pulseCtrl = new PulseControl();
         
         // init scheduled executor service
-        schedExec = Executors.newSingleThreadScheduledExecutor();
+        //schedExec = Executors.newSingleThreadScheduledExecutor();
+        pulseCtrlTimer = new Timer();
         
     }
 
@@ -61,7 +65,9 @@ public class MainActivity extends Activity {
     public void startCtrl(View view) {
     	
     	// start exec
-        schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1, TimeUnit.SECONDS);
+        //schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1, TimeUnit.SECONDS);
+        //schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1000, TimeUnit.MILLISECONDS);
+        pulseCtrlTimer.scheduleAtFixedRate(pulseCtrl, 0, 1000);
         // dissable start button
         Button btnStart = (Button) findViewById(R.id.start_button);
         btnStart.setEnabled(false);
@@ -75,7 +81,8 @@ public class MainActivity extends Activity {
     	
     	// stop exec
         //try {
-        	schedExec.shutdownNow();
+        	//schedExec.shutdownNow();
+            pulseCtrlTimer.cancel();
 			//schedExec.awaitTermination(100, TimeUnit.MILLISECONDS);
 		//} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

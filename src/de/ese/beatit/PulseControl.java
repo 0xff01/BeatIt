@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TimerTask;
 
+<<<<<<< HEAD
 import de.ese.beatit.pulsereader.BluetoothService;
 
 import android.os.Environment;
@@ -264,5 +265,4 @@ public class PulseControl extends TimerTask
 	{
 		return this.bpm;
 	}
-	
 }

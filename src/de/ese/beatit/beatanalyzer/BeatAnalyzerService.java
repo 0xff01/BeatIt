@@ -206,7 +206,7 @@ public class BeatAnalyzerService extends Service {
 				// create beat description
 				beatDescription = new BeatDescription();
 				beatDescription.setCertainty(1);
-				beatDescription.setBpm(bpm);
+				beatDescription.setBpm((int)bpm);
 			}
 			
 			// save to database

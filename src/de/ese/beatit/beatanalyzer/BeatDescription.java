@@ -2,17 +2,17 @@ package de.ese.beatit.beatanalyzer;
 
 public class BeatDescription {
 
-	private double bpm;
+	private int bpm;
 	private double certainty;
 	
 	/** certainty threshold **/
 	private final double certaintyThreshold = 1.0E-5d;
 	
-	public double getBpm() {
+	public int getBpm() {
 		return bpm;
 	}
 	
-	public void setBpm(double bpm2) {
+	public void setBpm(int bpm2) {
 		this.bpm = bpm2;
 	}
 

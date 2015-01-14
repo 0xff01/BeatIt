@@ -71,7 +71,7 @@ public class BeatAnalyzer {
 		Log.e("beatit", "certainty="+String.valueOf(certainty));
 		
 		BeatDescription description = new BeatDescription();
-		description.setBpm(bpm);
+		description.setBpm((int)bpm);
 		description.setCertainty(certainty);
 		
 		Log.e("beatit", "analyzed");

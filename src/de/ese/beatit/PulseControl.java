@@ -1,23 +1,25 @@
 package de.ese.beatit;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.TimerTask;
 
-<<<<<<< HEAD
+import android.os.Environment;
+import de.ese.beatit.mp3.BeatChangeListener;
+import de.ese.beatit.mp3.MP3Player;
 import de.ese.beatit.pulsereader.BluetoothService;
 
-import android.os.Environment;
-
 //public class PulseControl implements Runnable
-public class PulseControl extends TimerTask
+public class PulseControl extends TimerTask implements BeatChangeListener
 {
+	private MP3Player player = null;
+	
 	// testarray
 	public int[] testPulse = new int[40];
 	public double[] testMode = new double[40];
@@ -186,6 +188,11 @@ public class PulseControl extends TimerTask
 
 
 		//return bpm;
+        // TODO only if changes and not too often
+        if(player != null){
+        	player.setBpm(bpm);
+        }
+        
 		if(LOG_ENABLED)
 		{
 			try {
@@ -264,5 +271,16 @@ public class PulseControl extends TimerTask
 	public int getBpm()
 	{
 		return this.bpm;
+	}
+
+	public void setPlayer(MP3Player mp3Player) {
+		mp3Player.setListener(this);
+		this.player = mp3Player;
+	}
+
+	@Override
+	public void onBPMChanged(int bpm) {
+		//this.bpm = bpm;
+		// TODO react
 	}
 }

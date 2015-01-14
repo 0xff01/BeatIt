@@ -1,36 +1,25 @@
 package de.ese.beatit;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.Timer;
-import java.util.TimerTask;
-
-import de.ese.beatit.pulsereader.SetupBluetooth;
 
 import android.app.Activity;
-<<<<<<< HEAD
-import android.content.Intent;
-=======
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
->>>>>>> refs/remotes/origin/markus-branch
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-<<<<<<< HEAD
-import android.widget.Button;
-=======
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
 import de.ese.beatit.mp3.MP3Player;
 import de.ese.beatit.mp3.PlayerView;
+import de.ese.beatit.pulsereader.SetupBluetooth;
 
 public class MainActivity extends Activity {
 	
@@ -84,6 +73,9 @@ public class MainActivity extends Activity {
 	        // Tell the user about this for our demo.
 	        Toast.makeText(getApplicationContext(), "Connected",
 	                Toast.LENGTH_SHORT).show();
+	        
+	        pulseCtrl.setPlayer(mp3Player);
+	        pulseCtrlTimer.scheduleAtFixedRate(pulseCtrl, 0, 1000);
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
@@ -164,40 +156,6 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         doUnbindService();
-    }
-    
-    /** Called when the user clicks the Start button */
-    public void startCtrl(View view) {
-    	
-    	// start exec
-        //schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1, TimeUnit.SECONDS);
-        //schedExec.scheduleAtFixedRate(pulseCtrl, 0, 1000, TimeUnit.MILLISECONDS);
-        pulseCtrlTimer.scheduleAtFixedRate(pulseCtrl, 0, 1000);
-        // dissable start button
-        Button btnStart = (Button) findViewById(R.id.start_button);
-        btnStart.setEnabled(false);
-        // enable stop button
-        Button btnStop = (Button) findViewById(R.id.stop_button);
-        btnStop.setEnabled(true);
-    }
-    
-    /** Called when the user clicks the Stop button */
-    public void stopCtrl(View view) {
-    	
-    	// stop exec
-        //try {
-        	//schedExec.shutdownNow();
-            pulseCtrlTimer.cancel();
-			//schedExec.awaitTermination(100, TimeUnit.MILLISECONDS);
-		//} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
-        // dissable stop button
-        Button btnStop = (Button) findViewById(R.id.stop_button);
-        btnStop.setEnabled(false);
-        // enable stop button
-        Button btnStart = (Button) findViewById(R.id.start_button);
-        btnStart.setEnabled(true);
+        pulseCtrlTimer.cancel();
     }
 }

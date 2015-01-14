@@ -1,0 +1,79 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:id="@+id/player_view"
+    tools:context="de.ese.beatit.MainActivity" >
+
+    <LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+		
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="right"
+			android:text="BPM: " />
+		        
+		<SeekBar android:id="@+id/bpm_slider"
+			android:max="120"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"/>
+			
+    	<TextView
+    		android:id="@+id/bpm_display"
+        	android:layout_width="wrap_content"
+       		android:layout_height="wrap_content"
+    		android:gravity="right"
+        	android:text="120" />
+        
+	</LinearLayout>
+	
+	<TextView
+		android:id="@+id/track_view"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="left"
+		android:ellipsize="marquee"
+      	android:focusable="true"
+      	android:focusableInTouchMode="true"
+		android:scrollHorizontally="true"
+      	android:singleLine="true"
+		android:marqueeRepeatLimit="marquee_forever"
+		android:text="Not playing" />
+			
+	<de.ese.beatit.mp3.MP3View
+	    android:id="@+id/mp3_view"
+	    android:layout_width="fill_parent"
+	    android:layout_height="100px"
+	    android.paddingTop="60dp" />
+
+    <LinearLayout
+        android:id="@+id/button_bar"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+        android:gravity="center">
+
+		<ImageButton
+	        android:id="@+id/button_play_pause"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_play" />
+
+	   <ImageButton
+	        android:id="@+id/button_skip"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_next" />
+
+    </LinearLayout>
+</LinearLayout>
+<!-- From: file:/C:/Users/Fabian/Wearables/BeatIt_Studio1/app/src/main/res/layout/activity_main.xml -->

@@ -1,0 +1,105 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .idea\
+* .idea\compiler.xml
+* .idea\copyright\
+* .idea\copyright\profiles_settings.xml
+* .idea\encodings.xml
+* .idea\libraries\
+* .idea\libraries\android_support_v4.xml
+* .idea\misc.xml
+* .idea\modules.xml
+* .idea\scopes\
+* .idea\scopes\scope_settings.xml
+* .idea\vcs.xml
+* .idea\workspace.xml
+* BeatIt_Studio.iml
+* LICENSE
+* ic_launcher-web.png
+* out\
+* out\production\
+* out\production\BeatIt_Studio\
+* out\production\BeatIt_Studio\de\
+* out\production\BeatIt_Studio\de\ese\
+* out\production\BeatIt_Studio\de\ese\beatit\
+* out\production\BeatIt_Studio\de\ese\beatit\BuildConfig.class
+* out\production\BeatIt_Studio\de\ese\beatit\PulseControl.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$attr.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$dimen.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$drawable.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$id.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$layout.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$menu.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$string.class
+* out\production\BeatIt_Studio\de\ese\beatit\R$style.class
+* out\production\BeatIt_Studio\de\ese\beatit\R.class
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\BeatAnalyzer.class
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\BeatDescription.class
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\TrackDatabase.class
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\TrackDatabaseListener.class
+* out\production\BeatIt_Studio\de\ese\beatit\beatanalyzer\analyze.m
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\BeatChangeListener.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3Loader.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3Player$1$1.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3Player$1.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3Player$2.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3Player.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3PlayerListener.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\MP3View.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\PCMData.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\PlayerView$1.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\PlayerView.class
+* out\production\BeatIt_Studio\de\ese\beatit\mp3\Track.class
+* out\production\BeatIt_Studio\de\ese\beatit\pulsereader\
+* out\production\BeatIt_Studio\de\ese\beatit\pulsereader\ScanForDevices$1.class
+* out\production\BeatIt_Studio\de\ese\beatit\pulsereader\ScanForDevices$2$1.class
+* out\production\BeatIt_Studio\de\ese\beatit\pulsereader\ScanForDevices$2.class
+* out\production\BeatIt_Studio\de\ese\beatit\pulsereader\ScanForDevices.class
+* proguard-project.txt
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:21.0.3
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app\src\main\AndroidManifest.xml
+* libs\jaudiotagger-2.0.4-20111207.115108-15.jar => app\libs\jaudiotagger-2.0.4-20111207.115108-15.jar
+* libs\jl1.0.1.jar => app\libs\jl1.0.1.jar
+* res\ => app\src\main\res\
+* src\ => app\src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

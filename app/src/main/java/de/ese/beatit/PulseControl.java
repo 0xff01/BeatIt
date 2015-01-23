@@ -24,9 +24,10 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 	public int[] testPulse = new int[40];
 	public double[] testMode = new double[40];
 	
-	private int refPulse = 0;
+	private int refPulse = 155;
 	private int actPulse = 0;
-	private int bpm = 80;
+	private int bpm = 60;
+    private int bpmPlayed;
     private int lastChangeTime = 0;
 	private int testCntr = 0;
     private static long timeDiff = 0;
@@ -78,6 +79,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
         Long now1 = (long) (System.currentTimeMillis());
 		// get new act pulse
 		//actPulse = testPulse[testCntr];
+        Boolean bpmChange = false;
 		actPulse = BluetoothService.getCurrentPulseRate();
 
         // check for filter type
@@ -138,9 +140,11 @@ public class PulseControl extends TimerTask implements BeatChangeListener
             if ((modeKey < refPulse - NEG_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
                 this.bpm -= this.BPM_CHANGE;
                 this.lastChangeTime = runCnt;
+                bpmChange = true;
             } else if ((modeKey > refPulse + POS_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
                 this.bpm += this.BPM_CHANGE;
                 this.lastChangeTime = runCnt;
+                bpmChange = true;
             }
         }
         else if (FILTER_TYPE == 2) {
@@ -166,6 +170,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
                         state--;
                     }
                     BPM_Tick = runCnt;
+                    bpmChange = true;
                 }
                 else if(mean > refPulse + POS_HYSTERESIS)
                 {
@@ -175,6 +180,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
                         state--;
                     }
                     BPM_Tick = runCnt;
+                    bpmChange = true;
                 }
                 else
                 {
@@ -190,13 +196,15 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 		//return bpm;
         // TODO only if changes and not too often
         if(player != null){
-        	player.setBpm(bpm);
+            if (bpmChange) {
+                player.setBpm(bpm);
+            }
         }
         
 		if(LOG_ENABLED)
 		{
 			try {
-				logWriter.append(this.runCnt + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + ", " + this.bpm + ", " + this.timeDiff + "\n");
+				logWriter.append(this.runCnt + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + ", " + this.bpm + ", " + this.bpmPlayed + "\n");
 				//logWriter.append("test1");
 				logWriter.flush();
 			} catch (IOException e) {
@@ -280,7 +288,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 
 	@Override
 	public void onBPMChanged(int bpm) {
-		//this.bpm = bpm;
+		this.bpmPlayed = bpm;
 		// TODO react
 	}
 }

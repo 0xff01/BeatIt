@@ -26,6 +26,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,6 +39,8 @@
         <service android:name="de.ese.beatit.beatanalyzer.BeatAnalyzerService">
         	android:grantUriPermissions="true"
         </service>
+
+        <receiver android:name="de.ese.beatit.notification.WearActionReceiver" />
     </application>
 
 </manifest>

@@ -116,7 +116,8 @@ public class BeatAnalyzerService extends Service {
 			try {
 				tagFile = AudioFileIO.read(new File(track.getPath()));
 				tag = tagFile.getTag();
-				if(tag.hasField(FieldKey.BPM)){
+
+                if(tag !=  null && tag.hasField(FieldKey.BPM)){
 					String bpmStr = tag.getFirst(FieldKey.BPM);
 					float tbpm = Float.parseFloat(bpmStr);
 					if(tbpm != 0){
@@ -239,7 +240,8 @@ public class BeatAnalyzerService extends Service {
 		
 		String[] projection = {
 			MediaStore.Audio.Media.DATA,
-			MediaStore.Audio.Media.DURATION
+			MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.ARTIST
 		};
 		final String sortOrder = MediaStore.Audio.AudioColumns.TITLE + " COLLATE LOCALIZED ASC";
 		
@@ -254,11 +256,13 @@ public class BeatAnalyzerService extends Service {
 					
 					String path = cursor.getString(0);
 					double songDuration = (double)Integer.parseInt(cursor.getString(1)) / 1000;
-					
+                    String artist = cursor.getString(2);
+
 					if(songDuration > minDurationSeconds && (path.endsWith(".mp3") || path.endsWith(".MP3"))){
 						Track track = new Track();
 						track.setPath(path);
 						track.setDuration(songDuration);
+                        track.setArtist(artist);
 						paths.add(track);
 					}
 					cursor.moveToNext();

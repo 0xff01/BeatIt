@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.UUID;
 
@@ -39,14 +40,15 @@ public class BluetoothService extends Service {
 		mBluetoothGatt = mBluetoothDevice.connectGatt(context, false, btleGattCallback);
 	}
 
+
 	// Callback for handling connection status
 	BluetoothGattCallback btleGattCallback = new BluetoothGattCallback() {
-
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 
 			if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-				gatt.discoverServices();
+                //toastConnected();
+                gatt.discoverServices();
 			} else if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
 				gatt.connect();
 			} else if (status != BluetoothGatt.GATT_SUCCESS) {

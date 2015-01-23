@@ -157,6 +157,7 @@ public class MP3Player extends TrackDatabaseListener {
 				// report track change
 				for(MP3PlayerListener listener : mp3PlayerListeners){
 					listener.onTrackChanged(currentTrack);
+                    listener.onPlay();
 				}				
 				
 				// install timer to update position
@@ -254,6 +255,10 @@ public class MP3Player extends TrackDatabaseListener {
 		if(mPlayer != null){
 			paused = true;
 			mPlayer.pause();
+
+            for(MP3PlayerListener l: mp3PlayerListeners){
+                l.onPause();
+            }
 		}
 	}
 	

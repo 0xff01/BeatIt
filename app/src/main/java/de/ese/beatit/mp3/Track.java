@@ -12,8 +12,9 @@ public class Track {
 	
 	/** duration in seconds **/
 	private double duration;
-	
-	public BeatDescription getBeatDescription() {
+    private String artist;
+
+    public BeatDescription getBeatDescription() {
 		return beatDescription;
 	}
 	
@@ -50,4 +51,12 @@ public class Track {
 	public String getName(){
 		return name;
 	}
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
 }

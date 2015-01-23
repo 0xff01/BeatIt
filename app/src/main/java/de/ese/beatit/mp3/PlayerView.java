@@ -82,4 +82,14 @@ public class PlayerView implements MP3PlayerListener{
 	public void onPlaybackTimeChanged(double time) {
 		
 	}
+
+    @Override
+    public void onPlay() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
 }

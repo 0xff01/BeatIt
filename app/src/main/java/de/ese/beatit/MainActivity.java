@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +22,25 @@ import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
 import de.ese.beatit.mp3.MP3Player;
 import de.ese.beatit.mp3.PlayerView;
 import de.ese.beatit.pulsereader.SetupBluetooth;
+import de.ese.beatit.notification.GoogleWear;
+import de.ese.beatit.notification.WearActionReceiver;
 
 public class MainActivity extends Activity {
 	
 	private PulseControl pulseCtrl = null;
 	//private ScheduledExecutorService schedExec = null;
     private Timer pulseCtrlTimer = null;
+
+    // Notification setup
+
+    private int notification_id = 1;
+    private final String NOTIFICATION_ID = "notification_id";
+
+    private GoogleWear wear = null;
+    int numMessages = 0;
+
+    private NotificationCompat.Builder notification_builder;
+    private NotificationManagerCompat notification_manager;
 
     /** the service which provides the track database **/
     private BeatAnalyzerService beatAnalayzerService = null;
@@ -51,22 +66,14 @@ public class MainActivity extends Activity {
 	        playPause.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(mp3Player.isPlaying()){
-						mp3Player.pause();
-						playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
-					} else {
-						mp3Player.play();
-						playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
-					}
+                    processPlayPause();
 				}
 			});
 	        ImageButton skip = (ImageButton)(findViewById(R.id.button_skip));
 	        skip.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					if(mp3Player.isPlaying()){
-						mp3Player.skip();
-					}
+                    processSkip();
 				}
 			});
 	        
@@ -76,6 +83,8 @@ public class MainActivity extends Activity {
 	        
 	        pulseCtrl.setPlayer(mp3Player);
 	        pulseCtrlTimer.scheduleAtFixedRate(pulseCtrl, 0, 1000);
+
+            mp3Player.addMp3PlayerListener(wear);
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
@@ -88,8 +97,9 @@ public class MainActivity extends Activity {
 	        		Toast.LENGTH_SHORT).show();
 	    }
 	};
-	
-	/** player **/
+
+
+    /** player **/
 	private MP3Player mp3Player = null;
 	private PlayerView playerView = null;
 	
@@ -104,11 +114,35 @@ public class MainActivity extends Activity {
         pulseCtrl = new PulseControl();
         
         // init scheduled executor service
-        //schedExec = Executors.newSingleThreadScheduledExecutor();
         pulseCtrlTimer = new Timer();
 
         // connect service
         doBindService();
+
+        wear = new GoogleWear(new GoogleWear.WearListener() {
+
+            @Override
+            public void onVolumeUp() {
+
+            }
+
+            @Override
+            public void onVolumeDown() {
+
+            }
+
+            @Override
+            public void skip() {
+                processSkip();
+            }
+
+            @Override
+            public void onPlayPressed() {
+                processPlayPause();
+            }
+        });
+
+        wear.init(this);
     }
 
 	void doBindService() {
@@ -157,5 +191,23 @@ public class MainActivity extends Activity {
         super.onDestroy();
         doUnbindService();
         pulseCtrlTimer.cancel();
+    }
+
+    public void processPlayPause(){
+        final ImageButton playPause = (ImageButton)(findViewById(R.id.button_play_pause));
+        if(mp3Player.isPlaying()){
+            mp3Player.pause();
+            playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_play));
+        } else {
+            mp3Player.play();
+            playPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_pause));
+        }
+    }
+
+
+    private void processSkip() {
+        if(mp3Player.isPlaying()){
+            mp3Player.skip();
+        }
     }
 }

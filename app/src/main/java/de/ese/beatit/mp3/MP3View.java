@@ -113,4 +113,14 @@ public class MP3View extends View implements MP3PlayerListener {
 		currentTime = time;
 		postInvalidate();
 	}
+
+    @Override
+    public void onPlay() {
+
+    }
+
+    @Override
+    public void onPause() {
+
+    }
 }

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BeatIt_Master_Studio.iml" filepath="$PROJECT_DIR$/BeatIt_Master_Studio.iml" />
       <module fileurl="file://$PROJECT_DIR$/BeatIt_Studio1.iml" filepath="$PROJECT_DIR$/BeatIt_Studio1.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

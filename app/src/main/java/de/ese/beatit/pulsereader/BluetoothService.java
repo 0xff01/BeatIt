@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import java.util.UUID;
 
+import de.ese.beatit.MainActivity;
+
 public class BluetoothService extends Service {
 
 	private BluetoothDevice mBluetoothDevice;
@@ -47,7 +49,7 @@ public class BluetoothService extends Service {
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
 
 			if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-                //toastConnected();
+                Toast.makeText(MainActivity.getInstance(), "Connected to Pulse Device", Toast.LENGTH_LONG).show();
                 gatt.discoverServices();
 			} else if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_DISCONNECTED) {
 				gatt.connect();

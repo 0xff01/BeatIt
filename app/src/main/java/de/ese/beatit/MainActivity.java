@@ -106,6 +106,8 @@ public class MainActivity extends Activity {
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        instance = this;
         
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -209,5 +211,17 @@ public class MainActivity extends Activity {
         if(mp3Player.isPlaying()){
             mp3Player.skip();
         }
+    }
+
+    /** Make context globally accessible **/
+
+    private static MainActivity instance;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public static Context getContext() {
+        return instance;
     }
 }

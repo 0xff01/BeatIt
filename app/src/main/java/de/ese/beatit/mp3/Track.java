@@ -9,6 +9,9 @@ public class Track {
 	
 	/** bpm and first beat position **/
 	private BeatDescription beatDescription = null;
+
+    /** was skipped or just played before **/
+    private boolean wasSkipped;
 	
 	/** duration in seconds **/
 	private double duration;
@@ -52,11 +55,23 @@ public class Track {
 		return name;
 	}
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setArtist(String artist) {
         this.artist = artist;
     }
 
     public String getArtist() {
         return artist;
+    }
+
+    public void setWasSkipped(boolean skipped) {
+        this.wasSkipped = skipped;
+    }
+
+    public boolean getWasSkipped() {
+        return wasSkipped;
     }
 }

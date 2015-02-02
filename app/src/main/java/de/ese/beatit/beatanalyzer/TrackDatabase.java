@@ -1,11 +1,16 @@
 package de.ese.beatit.beatanalyzer;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import android.support.v4.util.Pair;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
+
+import de.ese.beatit.MainActivity;
+import de.ese.beatit.database.DatabaseReader;
 import de.ese.beatit.mp3.Track;
 
 public class TrackDatabase {
@@ -37,6 +42,13 @@ public class TrackDatabase {
 	
 	/** adapter **/
 	private TrackDatabaseListener listener = null;
+
+    /** Database Reader/Writer **/
+    DatabaseReader dbreader = new DatabaseReader(MainActivity.getInstance());
+
+    /** List of available bpms **/
+    List<Integer> availBPMList = new ArrayList<Integer>();
+    ArrayList<Track> allTheTracks = new ArrayList<Track>();
 	
 	public TrackDatabase(){
 		
@@ -44,6 +56,27 @@ public class TrackDatabase {
 			ArrayList<Track> list = new ArrayList<Track>();
 			data.put(i, list);
 		}
+
+        dbreader.open();
+
+        if (dbreader.getAllTracks().size() > 0) {
+
+            /** Add tracks from database to path array **/
+            for (int i = 0; i < dbreader.getAllTracks().size(); i++) {
+                Track currentTrack = dbreader.getAllTracks().get(i);
+                paths.add(i, currentTrack.getPath());
+                insert(currentTrack);
+                int index = cellIndex(currentTrack.getBeatDescription().getBpm());
+                data.get(index).add(currentTrack);
+                count++;
+
+                allTheTracks.add(currentTrack);
+
+                if (!(availBPMList.contains(currentTrack.getBeatDescription().getBpm())))
+                    availBPMList.add(currentTrack.getBeatDescription().getBpm());
+            }
+        }
+        for (Integer entry : availBPMList) Log.d("JanDebug", String.valueOf(entry));
 	}
 	
 	/**
@@ -52,81 +85,93 @@ public class TrackDatabase {
 	 * @param skippedTracks 
 	 */
 	public Track getTrack(double bpm, ArrayList<Track> skippedTracks){
-		
-		acquire();
-		
-		// get tracks
-		ArrayList<Track> tracks = null;
-		
-		// find cell index
-		int index = cellIndex(bpm);
-		if(data.get(index).size() == 0){
-			
-			tracks = new ArrayList<Track>(); 
-			
-			for(int i = 0; i<numCells; i++){
-				
-				int i1 = index-i;
-				int i2 = index+i;
-				
-				boolean foundData = false;
-				
-				if(i1 >= 0){
-					if(data.get(i1).size() != 0){
-						tracks.addAll(data.get(i1));
-						foundData = true;
-					}
-				}
-				
-				if(i2 < numCells){
-					if(data.get(i2).size() != 0){
-						tracks.addAll(data.get(i2));
-						foundData = true;
-					}
-				}
-				
-				if(foundData){
-					break;
-				}
-			}
-			
-		} else {
-			tracks = data.get(index);
-		}
-		
-		// find closest entry
-		Track closestEntry = null;
-		
-		for(Track entry : tracks){
-			
-			if(skippedTracks.contains(entry)){
-				continue;
-			}
-			if(closestEntry == null || Math.abs(entry.getBeatDescription().getBpm()-bpm) < Math.abs(closestEntry.getBeatDescription().getBpm()-bpm)){
-				closestEntry = entry;
-			}
-		}
-		
-		release();
-		
+
+        Track closestEntry = null;
+
+        ArrayList<Track> possibleTracks = new ArrayList<Track>();
+        ArrayList<Track> cleanedTracks;
+
+        if (availBPMList.contains(bpm)) {
+
+            Log.d("fetchSound", "BPM found");
+
+            for (Track currentTrack : allTheTracks) {
+                if (currentTrack.getBeatDescription().getBpm() == bpm) {
+                    possibleTracks.add(currentTrack);
+                }
+            }
+
+            cleanedTracks = possibleTracks;
+
+            cleanedTracks.removeAll(skippedTracks);
+
+            Log.d("fetchSound", String.valueOf(possibleTracks.size()));
+            Log.d("fetchSound", String.valueOf(cleanedTracks.size()));
+
+            if (cleanedTracks.size() > 0) {
+                closestEntry = cleanedTracks.get(0);
+            }
+            else {
+                closestEntry = possibleTracks.get(0);
+            }
+        }
+        else {
+
+            Log.d("fetchSound", "BPM not found");
+
+            for (Track currentTrack : allTheTracks) {
+
+                if (currentTrack.getBeatDescription().getBpm() <= (bpm + 10) && currentTrack.getBeatDescription().getBpm() >= (bpm - 10)) {
+                    possibleTracks.add(currentTrack);
+                }
+            }
+
+            cleanedTracks = possibleTracks;
+
+            cleanedTracks.removeAll(skippedTracks);
+
+            Log.d("fetchSound", String.valueOf(possibleTracks.size()));
+            Log.d("fetchSound", String.valueOf(cleanedTracks.size()));
+
+            if (cleanedTracks.size() > 0) {
+
+                closestEntry = cleanedTracks.get(0);
+
+                for (Track currTrack : cleanedTracks) {
+
+                    if (Math.abs(currTrack.getBeatDescription().getBpm() - bpm) < Math.abs(closestEntry.getBeatDescription().getBpm() - bpm)) {
+                        closestEntry = currTrack;
+                    }
+                }
+            }
+            else {
+                closestEntry = possibleTracks.get(0);
+
+                for (Track currTrack : possibleTracks) {
+
+                    if (Math.abs(currTrack.getBeatDescription().getBpm() - bpm) < Math.abs(closestEntry.getBeatDescription().getBpm() - bpm)) {
+                        closestEntry = currTrack;
+                    }
+                }
+            }
+        }
+
 		return closestEntry;
 	}
 	
 	void insert(Track entry){
-	
-		Log.e("beatit", "insert");
 		
 		boolean added = false;
-		
+
 		acquire();
-	
+
 		if(!(paths.contains(entry.getPath())) && entry.getBeatDescription()!= null){
-			
-			Log.e("beatit", "do insert");
 			
 			int index = cellIndex(entry.getBeatDescription().getBpm());
 			data.get(index).add(entry);
 			paths.add(entry.getPath());
+
+            dbreader.createTrackEntry(entry.getPath(), entry.getName(), entry.getArtist(), entry.getDuration(), entry.getBeatDescription());
 			
 			added = true;
 			
@@ -147,7 +192,6 @@ public class TrackDatabase {
 		try {
 			mutex.acquire();
 		} catch (InterruptedException e) {
-			
 		}
 	}
 	
@@ -166,8 +210,6 @@ public class TrackDatabase {
 	public void load() {
 		
 		acquire();
-		
-		// TODO
 		
 		initialized = true;
 		
@@ -198,6 +240,7 @@ public class TrackDatabase {
 		this.listener.setDatabase(this);
 		if(initialized){
 			this.listener.onDatabaseInitialized();
+            this.listener.onTrackCountChanged(count);
 		}
 	}
 
@@ -211,8 +254,7 @@ public class TrackDatabase {
 		
 		// just add to pths and not to tracks
 		paths.add(path);
-		
-		Log.e("beatit", "Added uncertain track "+path);
+
 		release();
 	}
 }

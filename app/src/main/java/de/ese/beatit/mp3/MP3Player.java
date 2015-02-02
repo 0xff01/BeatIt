@@ -51,7 +51,7 @@ public class MP3Player extends TrackDatabaseListener {
 	@Override
 	public void onTrackCountChanged(int newCount) {
 		
-		skippedTracksCountMax = newCount / 10;
+		skippedTracksCountMax = newCount / 5;
 		onSkippedTrackListUpdated();
 		
 		Log.e("beatit", "database count changed");
@@ -64,6 +64,9 @@ public class MP3Player extends TrackDatabaseListener {
 	}
 	
 	public void onSkippedTrackListUpdated(){
+
+        Log.d("JanDebug", String.valueOf(skippedTracks.size()) + " > " + String.valueOf(skippedTracksCountMax));
+
 		while(skippedTracks.size() > skippedTracksCountMax){
 			skippedTracks.remove(0);
 		}
@@ -221,6 +224,7 @@ public class MP3Player extends TrackDatabaseListener {
 		
 		// report skip
 		skippedTracks.add(currentTrack);
+
 		onSkippedTrackListUpdated();
 		
 		next();

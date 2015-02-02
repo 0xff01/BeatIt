@@ -43,8 +43,6 @@ public class DatabaseReader {
 
     public Track createTrackEntry(String dataPath, String track, String artist, double duration, BeatDescription description) {
 
-        Log.d("JanDebug", "Insert entry to sql db.");
-
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_FILE_PATH, dataPath);
         values.put(DatabaseHelper.COLUMN_TRACK_NAME, track);

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class DatabaseReader {
     private String[] allColumns = {
             DatabaseHelper.COLUMN_FILE_PATH,
             DatabaseHelper.COLUMN_TRACK_NAME,
+            DatabaseHelper.COLUMN_ARTIST,
             DatabaseHelper.COLUMN_BPM,
             DatabaseHelper.COLUMN_CERTAINTY,
             DatabaseHelper.COLUMN_IS_CERTAIN,
@@ -39,11 +41,14 @@ public class DatabaseReader {
         dbHelper.close();
     }
 
-    public Track createTrackEntry(String dataPath, String track, double duration, BeatDescription description) {
+    public Track createTrackEntry(String dataPath, String track, String artist, double duration, BeatDescription description) {
+
+        Log.d("JanDebug", "Insert entry to sql db.");
 
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_FILE_PATH, dataPath);
         values.put(DatabaseHelper.COLUMN_TRACK_NAME, track);
+        values.put(DatabaseHelper.COLUMN_ARTIST, artist);
         values.put(DatabaseHelper.COLUMN_BPM, description.getBpm());
         values.put(DatabaseHelper.COLUMN_CERTAINTY, description.getCertainty());
         values.put(DatabaseHelper.COLUMN_IS_CERTAIN, description.isCertain());
@@ -64,12 +69,13 @@ public class DatabaseReader {
         Track singleTrack = new Track();
         singleTrack.setPath(cursor.getString(0));
         singleTrack.setName(cursor.getString(1));
+        singleTrack.setArtist(cursor.getString(2));
         BeatDescription desc = new BeatDescription();
-        desc.setBpm(cursor.getInt(2));
-        desc.setCertainty(cursor.getDouble(3));
+        desc.setBpm(cursor.getInt(3));
+        desc.setCertainty(cursor.getDouble(4));
         desc.isCertain();
         singleTrack.setBeatDescription(desc);
-        singleTrack.setDuration(cursor.getDouble(4));
+        singleTrack.setDuration(cursor.getDouble(6));
 
         return singleTrack;
     }

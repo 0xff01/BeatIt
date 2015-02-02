@@ -13,6 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_NAME = "musicDB";
     public static final String COLUMN_FILE_PATH = "path";
     public static final String COLUMN_TRACK_NAME = "track";
+    public static final String COLUMN_ARTIST = "artist";
     public static final String COLUMN_BPM = "bpm";
     public static final String COLUMN_CERTAINTY = "certainty";
     public static final String COLUMN_IS_CERTAIN = "isCertain";
@@ -27,6 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TABLE_NAME + "("
             + COLUMN_FILE_PATH + " text not null, "
             + COLUMN_TRACK_NAME + " text not null, "
+            + COLUMN_ARTIST + " text not null, "
             + COLUMN_BPM + " integer not null, "
             + COLUMN_CERTAINTY + " REAL not null, "
             + COLUMN_IS_CERTAIN + " integer not null, "

@@ -12,11 +12,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.UUID;
 
 import de.ese.beatit.MainActivity;
+import de.ese.beatit.R;
 
 public class BluetoothService extends Service {
 
@@ -110,6 +112,11 @@ public class BluetoothService extends Service {
 		
 		// write current rate to console for debugging reasons
 		Log.d("HeartRate", "Current Heart Rate: " + characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1));
+
+        // Display current heart rate on main screen
+        TextView displayPulseRate = (TextView) MainActivity.getInstance().findViewById(R.id.measuredValueView);
+        displayPulseRate.setText(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1));
+
 	}
 
 	@Override

@@ -75,4 +75,19 @@
 	        android:src="@drawable/ic_action_next" />
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Current Heart Rate: "
+        android:id="@+id/currentHeartRateView"
+        android:layout_gravity="left|center_horizontal"
+        android:layout_marginTop="100dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/measuredValueView" />
 </LinearLayout>

@@ -16,7 +16,6 @@ import android.view.View;
 import de.ese.beatit.R;
 import de.ese.beatit.mp3.MP3PlayerListener;
 import de.ese.beatit.mp3.Track;
-import de.ese.beatit.pulsereader.BluetoothService;
 
 public class GoogleWear implements MP3PlayerListener {
 
@@ -27,14 +26,14 @@ public class GoogleWear implements MP3PlayerListener {
 
     private Context context;
 
+    private NotificationCompat.Action volUpAction;
+    private NotificationCompat.Action volDownAction;
+    private NotificationCompat.Action skipAction;
+
     private PendingIntent playPauseIntent;
     private PendingIntent volUpPIntent;
     private PendingIntent volDownPIntent;
     private PendingIntent skipPIntent;
-
-    private NotificationCompat.Action volUpAction;
-    private NotificationCompat.Action volDownAction;
-    private NotificationCompat.Action skipAction;
 
     private NotificationCompat.Builder trackBuilder, playerBuilder;
 
@@ -90,14 +89,13 @@ public class GoogleWear implements MP3PlayerListener {
         trackBuilder.setContentTitle("Not playing");
         trackBuilder.setContentText("--");
         trackBuilder.setDefaults(Notification.DEFAULT_ALL);
-        trackBuilder.setAutoCancel(false);
-        //trackBuilder.setOngoing(true);
+        trackBuilder.setAutoCancel(true);
 
         Intent actionIntent = new Intent(context, WearActionReceiver.class);
         actionIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         actionIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.PLAY_PAUSE);
 
-        playPauseIntent = PendingIntent.getBroadcast(context, 0, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        playPauseIntent = PendingIntent.getBroadcast(context, 1, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action action =
                 new NotificationCompat.Action.Builder(R.drawable.pause45,
@@ -107,6 +105,7 @@ public class GoogleWear implements MP3PlayerListener {
         Intent volUpIntent = new Intent(context, WearActionReceiver.class);
         volUpIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         volUpIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.VOL_UP);
+
         volUpPIntent = PendingIntent.getBroadcast(context, 2, volUpIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         volUpAction =
@@ -129,7 +128,7 @@ public class GoogleWear implements MP3PlayerListener {
         skipIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         skipIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.SKIP);
 
-        skipPIntent = PendingIntent.getBroadcast(context, 1, skipIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        skipPIntent = PendingIntent.getBroadcast(context, 4, skipIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         skipAction =
                 new NotificationCompat.Action.Builder(R.drawable.fast47,
@@ -153,9 +152,8 @@ public class GoogleWear implements MP3PlayerListener {
     }
 
     public void setTrackDescription(String title, String artist){
-        trackBuilder.setContentTitle(title + "-" + artist);
-        int Pulse = BluetoothService.getCurrentPulseRate();
-        trackBuilder.setContentText("Current pulse: " + Pulse);
+        trackBuilder.setContentTitle(title);
+        trackBuilder.setContentText(artist);
         notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());
     }
 
@@ -176,9 +174,9 @@ public class GoogleWear implements MP3PlayerListener {
                             .setHintHideIcon(true)
                             .setBackground(Melody)
                             .addAction(action)
+                            .addAction(skipAction)
                             .addAction(volUpAction)
                             .addAction(volDownAction)
-                            .addAction(skipAction)
                             .setContentAction(0);
 
             trackBuilder.extend(wearableExtender);
@@ -201,9 +199,9 @@ public class GoogleWear implements MP3PlayerListener {
                             .setHintHideIcon(true)
                             .setBackground(Melody)
                             .addAction(action)
+                            .addAction(skipAction)
                             .addAction(volUpAction)
                             .addAction(volDownAction)
-                            .addAction(skipAction)
                             .setContentAction(0);
 
             trackBuilder.extend(wearableExtender);

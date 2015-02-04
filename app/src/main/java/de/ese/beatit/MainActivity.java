@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -32,15 +33,9 @@ public class MainActivity extends Activity {
     private Timer pulseCtrlTimer = null;
 
     // Notification setup
-
-    private int notification_id = 1;
-    private final String NOTIFICATION_ID = "notification_id";
-
     private GoogleWear wear = null;
-    int numMessages = 0;
 
-    private NotificationCompat.Builder notification_builder;
-    private NotificationManagerCompat notification_manager;
+    private AudioManager audioMan;
 
     /** the service which provides the track database **/
     private BeatAnalyzerService beatAnalayzerService = null;
@@ -106,9 +101,13 @@ public class MainActivity extends Activity {
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        instance = this;
         
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        audioMan = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         // init pulseCtrl
         pulseCtrl = new PulseControl();
@@ -123,12 +122,12 @@ public class MainActivity extends Activity {
 
             @Override
             public void onVolumeUp() {
-
+                volUp();
             }
 
             @Override
             public void onVolumeDown() {
-
+                volDown();
             }
 
             @Override
@@ -206,8 +205,25 @@ public class MainActivity extends Activity {
 
 
     private void processSkip() {
-        if(mp3Player.isPlaying()){
-            mp3Player.skip();
-        }
+        mp3Player.skip();
+    }
+
+    private void volUp(){
+        audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
+    }
+    private void volDown(){
+        audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
+    }
+
+    /** Make context globally accessible **/
+
+    private static MainActivity instance;
+
+    public static MainActivity getInstance() {
+        return instance;
+    }
+
+    public static Context getContext() {
+        return instance;
     }
 }

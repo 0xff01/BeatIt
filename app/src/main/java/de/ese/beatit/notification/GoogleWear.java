@@ -1,41 +1,38 @@
 package de.ese.beatit.notification;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.CountDownTimer;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
 
 import de.ese.beatit.R;
 import de.ese.beatit.mp3.MP3PlayerListener;
 import de.ese.beatit.mp3.Track;
+import de.ese.beatit.pulsereader.BluetoothService;
 
 public class GoogleWear implements MP3PlayerListener {
 
     public static GoogleWear instance;
 
     private final int TRACK_INFO_NOTIFICATION_ID = 1;
-    private final int PLAYER_INFO_NOTIFICATION_ID = 2;
 
     private Context context;
+
+    private CountDownTimer countDownTimer;
 
     private NotificationCompat.Action volUpAction;
     private NotificationCompat.Action volDownAction;
     private NotificationCompat.Action skipAction;
 
     private PendingIntent playPauseIntent;
-    private PendingIntent volUpPIntent;
-    private PendingIntent volDownPIntent;
-    private PendingIntent skipPIntent;
 
-    private NotificationCompat.Builder trackBuilder, playerBuilder;
+    private NotificationCompat.Builder trackBuilder;
 
     private NotificationManagerCompat notification_manager;
 
@@ -83,7 +80,6 @@ public class GoogleWear implements MP3PlayerListener {
         // notification manager
         notification_manager = NotificationManagerCompat.from(context);
 
-        // init track info page
         trackBuilder = new NotificationCompat.Builder(context);
         trackBuilder.setSmallIcon(R.drawable.note);
         trackBuilder.setContentTitle("Not playing");
@@ -106,7 +102,7 @@ public class GoogleWear implements MP3PlayerListener {
         volUpIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         volUpIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.VOL_UP);
 
-        volUpPIntent = PendingIntent.getBroadcast(context, 2, volUpIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent volUpPIntent = PendingIntent.getBroadcast(context, 2, volUpIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         volUpAction =
                 new NotificationCompat.Action.Builder(R.drawable.round69,
@@ -117,7 +113,7 @@ public class GoogleWear implements MP3PlayerListener {
         volDownIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         volDownIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.VOL_DOWN);
 
-        volDownPIntent = PendingIntent.getBroadcast(context, 3, volDownIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent volDownPIntent = PendingIntent.getBroadcast(context, 3, volDownIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         volDownAction =
                 new NotificationCompat.Action.Builder(R.drawable.rounded61,
@@ -128,7 +124,7 @@ public class GoogleWear implements MP3PlayerListener {
         skipIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);
         skipIntent.putExtra(WearActionReceiver.WEAR_ACTION, WearActionReceiver.SKIP);
 
-        skipPIntent = PendingIntent.getBroadcast(context, 4, skipIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent skipPIntent = PendingIntent.getBroadcast(context, 4, skipIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         skipAction =
                 new NotificationCompat.Action.Builder(R.drawable.fast47,
@@ -149,11 +145,15 @@ public class GoogleWear implements MP3PlayerListener {
         trackBuilder.extend(wearableExtender);
 
         notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());
+
+        countDownTimer = new countDownTimer(50000, 5000);
+        countDownTimer.start();
     }
 
     public void setTrackDescription(String title, String artist){
-        trackBuilder.setContentTitle(title);
-        trackBuilder.setContentText(artist);
+        // TODO Scrolling track text
+        trackBuilder.setContentTitle(title + " " + artist);
+        trackBuilder.setContentText("Pulse: " + String.valueOf(BluetoothService.getCurrentPulseRate()));
         notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());
     }
 
@@ -227,5 +227,26 @@ public class GoogleWear implements MP3PlayerListener {
 
     public void onSkipPressed(){
         listener.skip();
+    }
+
+    public class countDownTimer extends CountDownTimer
+    {
+        public countDownTimer(long startTime, long interval)
+        {
+            super(startTime, interval);
+        }
+        @Override
+         public void onFinish()
+        {
+            trackBuilder.setContentText("Pulse: " + String.valueOf(BluetoothService.getCurrentPulseRate()));
+            notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());
+            countDownTimer.start();
+        }
+        @Override
+        public void onTick(long millisUntilFinished)
+        {
+            trackBuilder.setContentText("Pulse: " + String.valueOf(BluetoothService.getCurrentPulseRate()));
+            notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());
+        }
     }
 }

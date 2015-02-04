@@ -269,6 +269,9 @@ public class MP3Player extends TrackDatabaseListener {
 	public void play(){
 		if((mPlayer != null) && !mPlayer.isPlaying()){
 			mPlayer.start();
+            for(MP3PlayerListener l: mp3PlayerListeners){
+                l.onPlay();
+            }
 			paused = false;
 		} else if(mPlayer == null){
 			next();

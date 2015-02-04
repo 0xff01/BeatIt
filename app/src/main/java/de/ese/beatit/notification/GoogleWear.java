@@ -80,17 +80,12 @@ public class GoogleWear implements MP3PlayerListener {
         // notification manager
         notification_manager = NotificationManagerCompat.from(context);
 
-        // init track info page
-        NotificationCompat.BigTextStyle bigStyle = new NotificationCompat.BigTextStyle();
-        bigStyle.bigText("jbpggjlöajgfjhagsagökagjköasgjkgö");
-
         trackBuilder = new NotificationCompat.Builder(context);
         trackBuilder.setSmallIcon(R.drawable.note);
         trackBuilder.setContentTitle("Not playing");
         trackBuilder.setContentText("--");
         trackBuilder.setDefaults(Notification.DEFAULT_ALL);
         trackBuilder.setAutoCancel(true);
-        trackBuilder.setStyle(bigStyle);
 
         Intent actionIntent = new Intent(context, WearActionReceiver.class);
         actionIntent.putExtra(WearActionReceiver.NOTIFICATION_ID_STRING, TRACK_INFO_NOTIFICATION_ID);

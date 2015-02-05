@@ -32,6 +32,7 @@ import de.ese.beatit.pulsereader.BluetoothService;
 import de.ese.beatit.pulsereader.SetupBluetooth;
 import de.ese.beatit.notification.GoogleWear;
 import de.ese.beatit.notification.WearActionReceiver;
+import de.ese.beatit.settings.ReferencePulse;
 
 public class MainActivity extends Activity {
 	
@@ -218,6 +219,10 @@ public class MainActivity extends Activity {
         if (id == R.id.connect_pulse_reader) {
         	Intent connectDeviceIntent = new Intent(MainActivity.this, SetupBluetooth.class);
         	MainActivity.this.startActivity(connectDeviceIntent);
+        }
+        if (id == R.id.set_ref_pulse_interface) {
+            Intent setRefPulseIntent = new Intent(MainActivity.this, ReferencePulse.class);
+            MainActivity.this.startActivity(setRefPulseIntent);
         }
         return super.onOptionsItemSelected(item);
     }

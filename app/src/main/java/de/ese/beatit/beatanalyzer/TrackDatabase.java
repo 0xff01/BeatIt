@@ -76,7 +76,6 @@ public class TrackDatabase {
                     availBPMList.add(currentTrack.getBeatDescription().getBpm());
             }
         }
-        for (Integer entry : availBPMList) Log.d("JanDebug", String.valueOf(entry));
 	}
 	
 	/**
@@ -112,6 +111,7 @@ public class TrackDatabase {
                 closestEntry = cleanedTracks.get(0);
             }
             else {
+
                 closestEntry = possibleTracks.get(0);
             }
         }

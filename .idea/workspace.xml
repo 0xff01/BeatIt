@@ -19,33 +19,9 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="app: de.ese.beatit" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e3def8cb-1cea-48e3-9dc3-d4b16eca551e" name="Default" comment="New Layout for Smartphone App">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/BeatIt.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_next.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_next.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_next.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_next.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_next.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_next.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_next.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_next.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_pause.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_pause.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_pause.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_pause.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_pause.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_pause.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_pause.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_pause.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_play.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/ic_action_play.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_play.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-mdpi/ic_action_play.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_play.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xhdpi/ic_action_play.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_play.png" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/ic_action_play.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/intermediates/model_data.bin" afterPath="$PROJECT_DIR$/build/intermediates/model_data.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/AndroidManifest.xml" afterPath="$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/de/ese/beatit/BuildConfig.java" afterPath="$PROJECT_DIR$/app/build/generated/source/buildConfig/debug/de/ese/beatit/BuildConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/de/ese/beatit/notification/GoogleWear.java" afterPath="$PROJECT_DIR$/app/src/main/java/de/ese/beatit/notification/GoogleWear.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/aidl/android/support/v4/app/INotificationSideChannel.aidl" afterPath="$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/aidl/android/support/v4/app/INotificationSideChannel.aidl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/de/ese/beatit/mp3/MP3View.java" afterPath="$PROJECT_DIR$/app/src/main/java/de/ese/beatit/mp3/MP3View.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build/generated/source/r/debug/de/ese/beatit/R.java" afterPath="$PROJECT_DIR$/app/build/generated/source/r/debug/de/ese/beatit/R.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_set_ref_pulse.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_set_ref_pulse.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_setup_connection.xml" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_setup_connection.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/local.properties" afterPath="$PROJECT_DIR$/local.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_21_0_3.xml" afterPath="$PROJECT_DIR$/.idea/libraries/support_v4_21_0_3.xml" />
+    <list default="true" id="e3def8cb-1cea-48e3-9dc3-d4b16eca551e" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/smartphone_bg.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-hdpi/watch_bg.jpg" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="BeatIt_Studio.iws" />
@@ -1671,7 +1647,11 @@
       <created>1423059541628</created>
       <updated>1423059541628</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="New Layout for Smartphone App">
+      <created>1423171176225</created>
+      <updated>1423171176225</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1696,7 +1676,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32925472" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32925472" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1715,7 +1695,7 @@
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32035595" sideWeight="0.64469916" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32962447" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17004265" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17004265" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />

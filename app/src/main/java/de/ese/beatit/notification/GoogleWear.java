@@ -131,12 +131,12 @@ public class GoogleWear implements MP3PlayerListener {
                         "Skip-Track", skipPIntent)
                         .build();
 
-        Bitmap Melody = BitmapFactory.decodeResource(context.getResources(), R.drawable.music_background);
+        Bitmap watch_bg = BitmapFactory.decodeResource(context.getResources(), R.drawable.watch_bg);
 
         NotificationCompat.WearableExtender wearableExtender =
                 new NotificationCompat.WearableExtender()
                         .setHintHideIcon(true)
-                        .setBackground(Melody)
+                        .setBackground(watch_bg)
                         .addAction(action)
                         .addAction(skipAction)
                         .addAction(volUpAction)
@@ -167,12 +167,12 @@ public class GoogleWear implements MP3PlayerListener {
                             "play-pause", playPauseIntent)
                             .build();
 
-            Bitmap Melody = BitmapFactory.decodeResource(context.getResources(), R.drawable.music_background);
+            Bitmap watch_bg = BitmapFactory.decodeResource(context.getResources(), R.drawable.watch_bg);
 
             NotificationCompat.WearableExtender wearableExtender =
                     new NotificationCompat.WearableExtender()
                             .setHintHideIcon(true)
-                            .setBackground(Melody)
+                            .setBackground(watch_bg)
                             .addAction(action)
                             .addAction(skipAction)
                             .addAction(volUpAction)
@@ -192,12 +192,12 @@ public class GoogleWear implements MP3PlayerListener {
                             "play-pause", playPauseIntent)
                             .build();
 
-            Bitmap Melody = BitmapFactory.decodeResource(context.getResources(), R.drawable.music_background);
+            Bitmap watch_bg = BitmapFactory.decodeResource(context.getResources(), R.drawable.watch_bg);
 
             NotificationCompat.WearableExtender wearableExtender =
                     new NotificationCompat.WearableExtender()
                             .setHintHideIcon(true)
-                            .setBackground(Melody)
+                            .setBackground(watch_bg)
                             .addAction(action)
                             .addAction(skipAction)
                             .addAction(volUpAction)

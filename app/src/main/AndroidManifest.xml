@@ -33,14 +33,22 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <receiver android:name=".receiver">
+                <intent-filter >
+                    <action android:name="de.ese.beatit.heartratebroadcast"/>
+                </intent-filter>
+            </receiver>
         </activity>
         <activity android:name="de.ese.beatit.pulsereader.SetupBluetooth" />
+
+        <activity android:name="de.ese.beatit.settings.ReferencePulse" />
         
         <service android:name="de.ese.beatit.beatanalyzer.BeatAnalyzerService">
         	android:grantUriPermissions="true"
         </service>
 
         <receiver android:name="de.ese.beatit.notification.WearActionReceiver" />
+
     </application>
 
 </manifest>

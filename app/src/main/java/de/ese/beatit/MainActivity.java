@@ -3,25 +3,32 @@ package de.ese.beatit;
 import java.util.Timer;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import de.ese.beatit.beatanalyzer.BeatAnalyzerService;
 import de.ese.beatit.mp3.MP3Player;
 import de.ese.beatit.mp3.PlayerView;
+import de.ese.beatit.pulsereader.BluetoothService;
 import de.ese.beatit.pulsereader.SetupBluetooth;
 import de.ese.beatit.notification.GoogleWear;
 import de.ese.beatit.notification.WearActionReceiver;
@@ -36,6 +43,13 @@ public class MainActivity extends Activity {
     private GoogleWear wear = null;
 
     private AudioManager audioMan;
+
+    // Context singleton
+    private static Activity instance;
+
+    Handler mHandler = new Handler();
+
+    TextView pulseRateTV;
 
     /** the service which provides the track database **/
     private BeatAnalyzerService beatAnalayzerService = null;
@@ -102,10 +116,12 @@ public class MainActivity extends Activity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        instance = this;
-        
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        instance = this;
+
+        pulseRateTV = (TextView) findViewById(R.id.measuredValueView);
 
         audioMan = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -142,6 +158,27 @@ public class MainActivity extends Activity {
         });
 
         wear.init(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                while (true) {
+                    try {
+                        Thread.sleep(2000);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                pulseRateTV.setText(String.valueOf(BluetoothService.getCurrentPulseRate()));
+                                // TODO Auto-generated method stub
+                            }
+                        });
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+                }
+            }
+        }).start();
     }
 
 	void doBindService() {
@@ -212,18 +249,13 @@ public class MainActivity extends Activity {
         audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE,AudioManager.FLAG_SHOW_UI);
     }
     private void volDown(){
-        audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,AudioManager.FLAG_SHOW_UI);
+        audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
     }
 
     /** Make context globally accessible **/
 
-    private static MainActivity instance;
-
-    public static MainActivity getInstance() {
+    public static Activity getInstance() {
         return instance;
     }
 
-    public static Context getContext() {
-        return instance;
-    }
 }

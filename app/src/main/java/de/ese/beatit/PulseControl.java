@@ -14,6 +14,7 @@ import android.os.Environment;
 import de.ese.beatit.mp3.BeatChangeListener;
 import de.ese.beatit.mp3.MP3Player;
 import de.ese.beatit.pulsereader.BluetoothService;
+import de.ese.beatit.settings.ReferencePulse;
 
 //public class PulseControl implements Runnable
 public class PulseControl extends TimerTask implements BeatChangeListener
@@ -24,7 +25,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 	public int[] testPulse = new int[40];
 	public double[] testMode = new double[40];
 	
-	private int refPulse = 155;
+	private int refPulse = 160;
 	private int actPulse = 0;
 	private int bpm = 60;
     private int bpmPlayed;
@@ -81,6 +82,12 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 		//actPulse = testPulse[testCntr];
         Boolean bpmChange = false;
 		actPulse = BluetoothService.getCurrentPulseRate();
+
+        // check for new Ref Pulse
+        if(ReferencePulse.getRefPulse() > 0)
+        {
+            this.refPulse = ReferencePulse.getRefPulse();
+        }
 
         // check for filter type
         if(FILTER_TYPE == 1)

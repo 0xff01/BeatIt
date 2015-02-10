@@ -84,7 +84,9 @@ public class GoogleWear implements MP3PlayerListener {
         trackBuilder.setSmallIcon(R.drawable.note);
         trackBuilder.setContentTitle("Not playing");
         trackBuilder.setContentText("--");
-        trackBuilder.setDefaults(Notification.DEFAULT_ALL);
+        trackBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
+        trackBuilder.setVibrate(null);
+        trackBuilder.setSound(null);
         trackBuilder.setAutoCancel(true);
 
         Intent actionIntent = new Intent(context, WearActionReceiver.class);
@@ -94,7 +96,7 @@ public class GoogleWear implements MP3PlayerListener {
         playPauseIntent = PendingIntent.getBroadcast(context, 1, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Action action =
-                new NotificationCompat.Action.Builder(R.drawable.pause45,
+                new NotificationCompat.Action.Builder(R.drawable.right246,
                         "play-pause", playPauseIntent)
                         .build();
 
@@ -142,6 +144,7 @@ public class GoogleWear implements MP3PlayerListener {
                         .addAction(volUpAction)
                         .addAction(volDownAction)
                         .setContentAction(0);
+
         trackBuilder.extend(wearableExtender);
 
         notification_manager.notify(TRACK_INFO_NOTIFICATION_ID, trackBuilder.build());

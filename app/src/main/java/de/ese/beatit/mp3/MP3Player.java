@@ -67,9 +67,12 @@ public class MP3Player extends TrackDatabaseListener {
 
         Log.d("JanDebug", String.valueOf(skippedTracks.size()) + " > " + String.valueOf(skippedTracksCountMax));
 
-		while(skippedTracks.size() > skippedTracksCountMax){
+		/*while(skippedTracks.size() > skippedTracksCountMax){
 			skippedTracks.remove(0);
-		}
+		}*/
+        if (skippedTracks.size() == (skippedTracksCountMax)) {
+            skippedTracks.remove(0);
+        }
 	}
 	
 	/**

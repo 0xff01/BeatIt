@@ -58,8 +58,8 @@ public class MP3View extends View implements MP3PlayerListener {
 		} else { */
 			
 		//}
-		
-		canvas.drawColor(Color.rgb(0xdd, 0xdd, 0xdd));
+
+        p.setColor(Color.rgb(0x00, 0x00, 0x00));
 		
 		p.setTextSize(30);
 		
@@ -67,7 +67,7 @@ public class MP3View extends View implements MP3PlayerListener {
 		float processHeight = 60;
 		float graypadding = 20;
 		
-		p.setColor(Color.rgb(0x33, 0xb5, 0xe5));
+		p.setColor(Color.rgb(0xdd, 0xdd, 0xdd));
 		RectF timeRect = new RectF(
 			graypadding,
 			getHeight()-graypadding-processHeight,
@@ -81,8 +81,8 @@ public class MP3View extends View implements MP3PlayerListener {
 			getHeight()-graypadding-processHeight+8,
 			graypadding+8 + getWidth()-2*graypadding-16,
 			getHeight()-graypadding-8);
-		
-		p.setColor(Color.rgb(0xaa, 0xaa, 0xaa));
+
+		p.setColor(Color.rgb(0x11, 0x11, 0x11));
 		canvas.drawRect(inner, p);
 		
 		// track name
@@ -96,7 +96,9 @@ public class MP3View extends View implements MP3PlayerListener {
 				graypadding+8 + process*(getWidth()-2*graypadding-16),
 				getHeight()-graypadding-8);
 			
-			p.setColor(getResources().getColor(android.R.color.holo_orange_dark));
+			//p.setColor(getResources().getColor(android.R.color.holo_orange_dark));
+            p.setColor(Color.rgb(0xfe,0x45,0x42));
+
 			canvas.drawRect(timeRect, p);
 		}
 	}

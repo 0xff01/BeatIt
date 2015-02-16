@@ -19,6 +19,9 @@ public class DatabaseReader {
 
     private SQLiteDatabase db;
     private DatabaseHelper dbHelper;
+
+    /** Fetching the column names **/
+
     private String[] allColumns = {
             DatabaseHelper.COLUMN_FILE_PATH,
             DatabaseHelper.COLUMN_TRACK_NAME,
@@ -40,6 +43,10 @@ public class DatabaseReader {
     public void close() {
         dbHelper.close();
     }
+
+    /** getter functions
+     * getting data from database
+     */
 
     public Track createTrackEntry(String dataPath, String track, String artist, double duration, BeatDescription description) {
 

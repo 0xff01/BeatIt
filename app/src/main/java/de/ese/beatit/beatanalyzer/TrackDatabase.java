@@ -59,6 +59,13 @@ public class TrackDatabase {
 
         dbreader.open();
 
+        /** If database is available
+         * load tracks from database
+         *
+         * Tracks will be compared to tracks read from file system
+         * If track is not in database it will be added
+         */
+
         if (dbreader.getAllTracks().size() > 0) {
 
             /** Add tracks from database to path array **/
@@ -81,6 +88,7 @@ public class TrackDatabase {
 	/**
 	 * Returns all tracks registered for the given bpm.
 	 * Will return tracks with closest bpm if exact bpm has not been found.
+     * Range of possible tracks is +/- 10 regarding the given bpm
 	 * @param skippedTracks 
 	 */
 	public Track getTrack(double bpm, ArrayList<Track> skippedTracks){
@@ -90,9 +98,8 @@ public class TrackDatabase {
         ArrayList<Track> possibleTracks = new ArrayList<Track>();
         ArrayList<Track> cleanedTracks;
 
+        /** Check if track with needed bpm is available **/
         if (availBPMList.contains(bpm)) {
-
-            Log.d("fetchSound", "BPM found");
 
             for (Track currentTrack : allTheTracks) {
                 if (currentTrack.getBeatDescription().getBpm() == bpm) {
@@ -104,9 +111,10 @@ public class TrackDatabase {
 
             cleanedTracks.removeAll(skippedTracks);
 
-            Log.d("fetchSound", String.valueOf(possibleTracks.size()));
-            Log.d("fetchSound", String.valueOf(cleanedTracks.size()));
 
+            /** Check if track is still available
+             * after cleaning out the previously skipped tracks
+             */
             if (cleanedTracks.size() > 0) {
                 closestEntry = cleanedTracks.get(0);
             }
@@ -115,9 +123,11 @@ public class TrackDatabase {
                 closestEntry = possibleTracks.get(0);
             }
         }
-        else {
 
-            Log.d("fetchSound", "BPM not found");
+        /** get a track within the given range of 10
+         * return the track with the closest bpm regarding the given bpm
+         */
+        else {
 
             for (Track currentTrack : allTheTracks) {
 
@@ -158,7 +168,11 @@ public class TrackDatabase {
 
 		return closestEntry;
 	}
-	
+
+    /** If analyzed track is not in database
+     * Save it to database
+     * @param entry
+     */
 	void insert(Track entry){
 		
 		boolean added = false;

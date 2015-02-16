@@ -257,7 +257,9 @@ public class MainActivity extends Activity {
         audioMan.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
     }
 
-    /** Make context globally accessible **/
+    /** Make context globally accessible
+     * needed to work with database
+     */
 
     public static Activity getInstance() {
         return instance;

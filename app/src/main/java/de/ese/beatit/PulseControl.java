@@ -89,113 +89,46 @@ public class PulseControl extends TimerTask implements BeatChangeListener
             this.refPulse = ReferencePulse.getRefPulse();
         }
 
-        // check for filter type
-        if(FILTER_TYPE == 1)
-        {
-            // use mean filter
-            meanFIFO.addFirst(actPulse);
-            if (meanFilterCnt >= MEAN_SIZE) {
-                sum += actPulse;
-                sum -= meanFIFO.removeLast();
-                mean = sum / MEAN_SIZE;
-            } else {
-                sum += actPulse;
-                meanFilterCnt++;
-                mean = sum / meanFilterCnt;
-            }
-            //mean = sum/MEAN_SIZE;
-
-            // use mode filter
-            modeFIFO.addFirst(mean);
-            if (modeMap.containsKey(mean)) {
-                modeMap.put(mean, modeMap.get(mean) + 1);
-            } else {
-                modeMap.put(mean, 1);
-            }
-            if (modeFilterCnt > MODE_SIZE) {
-                int tempKey = modeFIFO.removeLast();
-                int tempVal = modeMap.get(tempKey);
-                if (tempVal > 1) {
-                    modeMap.put(tempKey, tempVal - 1);
-                } else {
-                    modeMap.remove(tempKey);
-                }
-            } else {
-                modeFilterCnt++;
-            }
-
-            // search map
-            Iterator<Integer> modeFilterIt = modeFIFO.iterator();
-            int tempKey = 0;
-            int tempVal = 0;
-            int tempMaxKey = 0;
-            int tempMaxVal = 0;
-            while (modeFilterIt.hasNext()) {
-                tempKey = modeFilterIt.next();
-                tempVal = modeMap.get(tempKey);
-                if (tempVal > tempMaxVal) {
-                    tempMaxKey = tempKey;
-                    tempMaxVal = tempVal;
-                }
-            }
-            modeKey = tempMaxKey;
-            modeVal = tempMaxVal;
-
-            //testMode[testCntr] = tempMaxKey;
-
-            // compare to refPulse
-            if ((modeKey < refPulse - NEG_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
-                this.bpm -= this.BPM_CHANGE;
-                this.lastChangeTime = runCnt;
-                bpmChange = true;
-            } else if ((modeKey > refPulse + POS_HYSTERESIS) && (runCnt - BPM_REFRESH_WAIT > lastChangeTime)) {
-                this.bpm += this.BPM_CHANGE;
-                this.lastChangeTime = runCnt;
-                bpmChange = true;
-            }
+        // use mean filter
+        meanFIFO.addFirst(actPulse);
+        if (meanFilterCnt >= MEAN_SIZE) {
+            sum += actPulse;
+            sum -= meanFIFO.removeLast();
+            mean = sum / MEAN_SIZE;
+        } else {
+            sum += actPulse;
+            meanFilterCnt++;
+            mean = sum / meanFilterCnt;
         }
-        else if (FILTER_TYPE == 2) {
-            // use mean filter
-            meanFIFO.addFirst(actPulse);
-            if (meanFilterCnt >= MEAN_SIZE) {
-                sum += actPulse;
-                sum -= meanFIFO.removeLast();
-                mean = sum / MEAN_SIZE;
-            } else {
-                sum += actPulse;
-                meanFilterCnt++;
-                mean = sum / meanFilterCnt;
-            }
 
-            if(runCnt >= BPM_Tick + state*BPM_UPDATE_WAIT)
+        if(runCnt >= BPM_Tick + state*BPM_UPDATE_WAIT)
+        {
+            if (mean < refPulse - NEG_HYSTERESIS)
             {
-                if (mean < refPulse - NEG_HYSTERESIS)
+                bpm += BPM_CHANGE;
+                if (state > 1)
                 {
-                    bpm += BPM_CHANGE;
-                    if (state > 1)
-                    {
-                        state--;
-                    }
-                    BPM_Tick = runCnt;
-                    bpmChange = true;
+                    state--;
                 }
-                else if(mean > refPulse + POS_HYSTERESIS)
+                BPM_Tick = runCnt;
+                bpmChange = true;
+            }
+            else if(mean > refPulse + POS_HYSTERESIS)
+            {
+                bpm -= BPM_CHANGE;
+                if (state > 1)
                 {
-                    bpm -= BPM_CHANGE;
-                    if (state > 1)
-                    {
-                        state--;
-                    }
-                    BPM_Tick = runCnt;
-                    bpmChange = true;
+                    state--;
                 }
-                else
-                {
-                    if (state < MAX_STATE) {
-                        state = state + 1;
-                    }
-                    BPM_Tick = runCnt;
+                BPM_Tick = runCnt;
+                bpmChange = true;
+            }
+            else
+            {
+                if (state < MAX_STATE) {
+                    state = state + 1;
                 }
+                BPM_Tick = runCnt;
             }
         }
 
@@ -211,7 +144,7 @@ public class PulseControl extends TimerTask implements BeatChangeListener
 		if(LOG_ENABLED)
 		{
 			try {
-				logWriter.append(this.runCnt + ", " + this.refPulse + ", " + this.actPulse + ", " + modeKey + ", " + this.bpm + ", " + this.bpmPlayed + "\n");
+				logWriter.append(this.runCnt + ", " + this.refPulse + ", " + this.actPulse  + ", " + this.bpm + ", " + this.bpmPlayed + "\n");
 				//logWriter.append("test1");
 				logWriter.flush();
 			} catch (IOException e) {

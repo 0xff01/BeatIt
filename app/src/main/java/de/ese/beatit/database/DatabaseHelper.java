@@ -10,6 +10,8 @@ import android.util.Log;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    /** Names of database columns **/
+
     public static final String TABLE_NAME = "musicDB";
     public static final String COLUMN_FILE_PATH = "path";
     public static final String COLUMN_TRACK_NAME = "track";
@@ -20,9 +22,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DURATION = "duration";
 
 
+    /** Database specific settings **/
+
     private static final String DATABASE_NAME = "tracks.db";
     private static final int DATABASE_VERSION = 1;
 
+
+    /** Query to create the music database **/
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_NAME + "("
@@ -42,6 +48,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE);
     }
+
+
+    /** On changes to the database structure
+     * drop old database and build new one
+     */
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
